@@ -6,38 +6,33 @@ import {
   MSTResult,
   DistanceResult,
   ConnectivityResult
-} from '@/shared/types/grpah.interface';
+} from '@/shared/types/graph.interface';
 
 export class Graph {
   private adjList: Map<number, Map<number, number>>;
   private vertices: Set<number>;
   private graphType: GraphType;
 
-  constructor(filePath?: string, graphType: GraphType = 'undirected') {
+  constructor(graphType: GraphType = 'undirected') {
     this.adjList = new Map();
     this.vertices = new Set();
     this.graphType = graphType;
   }
 
-  /* Инициализация из данных React компонента */
   initializeFromData(vertices: Vertex[], edges: Edge[], graphType: GraphType): void {
     this.vertices = new Set(vertices.map(v => v.id));
     this.adjList = new Map();
     this.graphType = graphType;
 
-    /* Инициализируем списки смежности */
     vertices.forEach(vertex => {
       this.adjList.set(vertex.id, new Map());
     });
 
-    /* Добавляем рёбра с учётом типа графа */
     edges.forEach(edge => {
       if (this.graphType === 'undirected') {
-        /* Для неориентированного - добавляем в обе стороны */
         this.addEdge(edge.from, edge.to, edge.weight);
         this.addEdge(edge.to, edge.from, edge.weight);
       } else {
-        /* Для ориентированного - только в указанном направлении */
         this.addEdge(edge.from, edge.to, edge.weight);
       }
     });
@@ -70,13 +65,8 @@ export class Graph {
   }
 
   addEdge(v1: number, v2: number, weight: number): void {
-    if (!this.vertices.has(v1)) {
-      this.addVertex(v1);
-    }
-    if (!this.vertices.has(v2)) {
-      this.addVertex(v2);
-    }
-
+    if (!this.vertices.has(v1)) this.addVertex(v1);
+    if (!this.vertices.has(v2)) this.addVertex(v2);
     this.adjList.get(v1)!.set(v2, weight);
   }
 
@@ -84,9 +74,7 @@ export class Graph {
     if (this.vertices.has(v)) {
       this.vertices.delete(v);
       this.adjList.delete(v);
-
-      /* Удаляем все упоминания вершины в других списках смежности */
-      for (const [vertex, neighbors] of this.adjList) {
+      for (const [, neighbors] of this.adjList) {
         neighbors.delete(v);
       }
     }
@@ -94,7 +82,6 @@ export class Graph {
 
   removeEdge(v1: number, v2: number): void {
     this.adjList.get(v1)?.delete(v2);
-    /* Для неориентированного графа удаляем и обратное ребро */
     if (this.graphType === 'undirected') {
       this.adjList.get(v2)?.delete(v1);
     }
@@ -104,7 +91,6 @@ export class Graph {
     if (vertex !== undefined) {
       const neighbors = this.adjList.get(vertex);
       if (!neighbors) return [];
-
       return Array.from(neighbors.entries()).map(([to, weight]) => ({
         from: vertex,
         to,
@@ -112,24 +98,21 @@ export class Graph {
       }));
     } else {
       const edges: Edge[] = [];
-
       if (this.graphType === 'undirected') {
-        /* Для неориентированного избегаем дубликатов */
         const edgesSet = new Set<string>();
         for (const [from, neighbors] of this.adjList) {
           for (const [to, weight] of neighbors) {
             const key = [Math.min(from, to), Math.max(from, to)].join('-');
             if (!edgesSet.has(key)) {
               edgesSet.add(key);
-              edges.push({from, to, weight});
+              edges.push({ from, to, weight });
             }
           }
         }
       } else {
-        /* Для ориентированного включаем все рёбра */
         for (const [from, neighbors] of this.adjList) {
           for (const [to, weight] of neighbors) {
-            edges.push({from, to, weight});
+            edges.push({ from, to, weight });
           }
         }
       }
@@ -143,7 +126,7 @@ export class Graph {
 
   isConnected(): ConnectivityResult {
     if (this.vertices.size === 0) {
-      return {isConnected: true, components: []};
+      return { isConnected: true, components: [] };
     }
 
     const visited = new Set<number>();
@@ -179,17 +162,13 @@ export class Graph {
     };
   }
 
-  /* Для орграфа - компоненты слабой связности (игнорируем направление) */
   weakConnectedComponents(): ConnectivityResult {
-    /* Создаём неориентированную версию графа */
     const undirectedAdjList = new Map<number, Set<number>>();
 
-    /* Инициализируем списки смежности */
     for (const vertex of this.vertices) {
       undirectedAdjList.set(vertex, new Set());
     }
 
-    /* Добавляем рёбра в обе стороны (игнорируем направление) */
     for (const [from, neighbors] of this.adjList) {
       for (const to of neighbors.keys()) {
         undirectedAdjList.get(from)!.add(to);
@@ -234,14 +213,12 @@ export class Graph {
     const distances = new Map<number, number>();
     const predecessors = new Map<number, number | null>();
 
-    /* Инициализация */
     for (const vertex of this.vertices) {
       distances.set(vertex, Infinity);
       predecessors.set(vertex, null);
     }
     distances.set(start, 0);
 
-    /* Релаксация рёбер |V| - 1 раз */
     for (let i = 0; i < this.vertices.size - 1; i++) {
       let updated = false;
 
@@ -258,39 +235,34 @@ export class Graph {
         }
       }
 
-      /* Если на этой итерации не было изменений, можно завершить раньше */
       if (!updated) break;
     }
 
-    /* Проверка на отрицательные циклы */
     for (const [u, neighbors] of this.adjList) {
       for (const [v, weight] of neighbors) {
         const distU = distances.get(u)!;
         const distV = distances.get(v)!;
-
         if (distU !== Infinity && distU + weight < distV) {
           throw new Error('Граф содержит отрицательный цикл');
         }
       }
     }
 
-    return {distances, predecessors};
+    return { distances, predecessors };
   }
 
   shortestPath(start: number, end: number): ShortestPathResult {
-    /* Проверка существования вершин */
     if (!this.vertices.has(start) || !this.vertices.has(end)) {
-      return {path: [], distance: Infinity};
+      return { path: [], distance: Infinity };
     }
 
     try {
-      const {distances, predecessors} = this.bellmanFord(start);
+      const { distances, predecessors } = this.bellmanFord(start);
 
       if (distances.get(end) === Infinity) {
-        return {path: [], distance: Infinity};
+        return { path: [], distance: Infinity };
       }
 
-      /* Восстанавливаем путь */
       const path: number[] = [];
       let current: number | null = end;
 
@@ -299,10 +271,10 @@ export class Graph {
         current = predecessors.get(current)!;
       }
 
-      return {path, distance: distances.get(end)!};
+      return { path, distance: distances.get(end)! };
     } catch (error) {
       console.error(`Ошибка при поиске пути: ${error}`);
-      return {path: [], distance: Infinity};
+      return { path: [], distance: Infinity };
     }
   }
 
@@ -312,35 +284,32 @@ export class Graph {
       for (const vertex of this.vertices) {
         emptyDistances.set(vertex, Infinity);
       }
-      return {distances: emptyDistances, fromVertex: start};
+      return { distances: emptyDistances, fromVertex: start };
     }
 
     try {
-      const {distances} = this.bellmanFord(start);
-      return {distances, fromVertex: start};
+      const { distances } = this.bellmanFord(start);
+      return { distances, fromVertex: start };
     } catch (error) {
       console.error(`Ошибка при вычислении расстояний: ${error}`);
       const emptyDistances = new Map<number, number>();
       for (const vertex of this.vertices) {
         emptyDistances.set(vertex, Infinity);
       }
-      return {distances: emptyDistances, fromVertex: start};
+      return { distances: emptyDistances, fromVertex: start };
     }
   }
 
   kruskalMST(): MSTResult {
     if (this.vertices.size === 0) {
-      return {edges: [], totalWeight: 0};
+      return { edges: [], totalWeight: 0 };
     }
 
-    /* Собираем все рёбра (для орграфа используем неориентированную версию) */
     const edges: [number, number, number][] = [];
     const edgeSet = new Set<string>();
 
     for (const [u, neighbors] of this.adjList) {
       for (const [v, weight] of neighbors) {
-        /* Для неориентированного графа избегаем дубликатов */
-        /* Для ориентированного создаём неориентированные рёбра для MST */
         const key = this.graphType === 'undirected'
           ? [Math.min(u, v), Math.max(u, v)].join('-')
           : `${u}-${v}`;
@@ -349,8 +318,6 @@ export class Graph {
           edgeSet.add(key);
           edges.push([u, v, weight]);
 
-          /* Для ориентированного графа добавляем обратное ребро с тем же весом */
-          /* чтобы MST могло быть построено корректно */
           if (this.graphType === 'directed') {
             const reverseKey = `${v}-${u}`;
             if (!edgeSet.has(reverseKey)) {
@@ -362,10 +329,8 @@ export class Graph {
       }
     }
 
-    /* Сортируем рёбра по весу */
     edges.sort((a, b) => a[2] - b[2]);
 
-    /* Система непересекающихся множеств */
     const parent = new Map<number, number>();
     const rank = new Map<number, number>();
 
@@ -403,13 +368,12 @@ export class Graph {
       return false;
     };
 
-    /* Построение MST */
     const mstEdges: Edge[] = [];
     let totalWeight = 0;
 
     for (const [u, v, weight] of edges) {
       if (union(u, v)) {
-        mstEdges.push({from: u, to: v, weight});
+        mstEdges.push({ from: u, to: v, weight });
         totalWeight += weight;
         if (mstEdges.length === this.vertices.size - 1) {
           break;
@@ -417,16 +381,14 @@ export class Graph {
       }
     }
 
-    return {edges: mstEdges, totalWeight};
+    return { edges: mstEdges, totalWeight };
   }
 
-  /* Метод для экспорта графа в файл */
   exportToFile(format: 'matrix' | 'list' = 'matrix'): string {
     const vertices = this.getVertices();
     let content = '';
 
     if (format === 'matrix') {
-      /* Матрица смежности */
       for (const v1 of vertices) {
         const row: number[] = [];
         for (const v2 of vertices) {
@@ -435,7 +397,6 @@ export class Graph {
         content += row.join(' ') + '\n';
       }
     } else {
-      /* Списки смежности */
       for (const vertex of vertices) {
         const neighbors = this.adjList.get(vertex);
         if (neighbors && neighbors.size > 0) {
@@ -452,7 +413,6 @@ export class Graph {
     return content;
   }
 
-  /* Вспомогательный метод для отладки */
   printGraph(): void {
     console.log('Graph type:', this.graphType);
     console.log('Vertices:', this.getVertices());

@@ -1,6 +1,6 @@
-import type {Metadata} from 'next';
-import {Geist} from 'next/font/google';
-import '@/app/globals.css';
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import './globals.css';
 
 const geistSans = Geist({
   display: 'swap',
@@ -22,15 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html
-        lang="en"
-        className="antialiased theme-light"
-      >
-      <body
-        className={`${geistSans.variable} antialiased`}
-      >
-      {children}
-      </body>
-      </html>
+    <html
+      lang="en"
+      className="antialiased theme-light"
+    >
+    <body
+      className={`${geistSans.variable} antialiased`}
+    >
+    {children}
+    </body>
+    </html>
   );
 }

@@ -37,3 +37,11 @@ export interface ConnectivityResult {
   isConnected: boolean;
   components: number[][];
 }
+
+export interface VerticesListResult {
+  vertices: number[];
+}
+
+export interface EdgesListResult {
+  edges: { from: number; to: number; weight: number }[];
+}

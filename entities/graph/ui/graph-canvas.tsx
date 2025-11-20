@@ -1,7 +1,7 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface';
+import React, { useRef, useEffect, useState } from 'react';
+import { GraphData, Edge, Vertex, ShortestPathResult, MSTResult } from '@/shared/types/graph.interface';
 
-interface GraphVisualizerProps {
+interface GraphCanvasProps {
   graphData: GraphData;
   selectedVertices: number[];
   shortestPath: ShortestPathResult | null;
@@ -10,36 +10,29 @@ interface GraphVisualizerProps {
   onVertexMove: (vertexId: number, x: number, y: number) => void;
 }
 
-const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
-                                                           graphData,
-                                                           selectedVertices,
-                                                           shortestPath,
-                                                           mst,
-                                                           onVertexSelect,
-                                                           onVertexMove
-                                                         }) => {
+export const GraphCanvas: React.FC<GraphCanvasProps> = ({
+                                                          graphData,
+                                                          selectedVertices,
+                                                          shortestPath,
+                                                          mst,
+                                                          onVertexSelect,
+                                                          onVertexMove
+                                                        }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState<number | null>(null);
-  const [canvasSize, setCanvasSize] = useState({width: 800, height: 600});
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
 
-  /* Функция для обновления размеров canvas */
   const updateCanvasSize = () => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-
-      /* Рассчитываем ширину canvas в зависимости от ширины контейнера */
-      let newWidth = Math.min(containerWidth - 40, 1200); /* Максимальная ширина 1200px */
-      newWidth = Math.max(newWidth, 400); /* Минимальная ширина 400px */
-
-      /* Сохраняем соотношение сторон 4:3 */
+      let newWidth = Math.min(containerWidth - 40, 1200);
+      newWidth = Math.max(newWidth, 400);
       const newHeight = Math.round(newWidth * 0.75);
-
-      setCanvasSize({width: newWidth, height: newHeight});
+      setCanvasSize({ width: newWidth, height: newHeight });
     }
   };
 
-  /* Обработчик изменения размера окна */
   useEffect(() => {
     updateCanvasSize();
 
@@ -48,8 +41,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     };
 
     window.addEventListener('resize', handleResize);
-
-    /* Используем ResizeObserver для отслеживания изменений размера контейнера */
     const resizeObserver = new ResizeObserver(handleResize);
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
@@ -65,7 +56,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     ctx.fillStyle = '#fafbfc';
     ctx.fillRect(0, 0, width, height);
 
-    /* Сетка */
     ctx.strokeStyle = '#e9ecef';
     ctx.lineWidth = 0.5;
     const gridSize = 20;
@@ -94,7 +84,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const distance = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx);
 
-    /* Корректируем позицию стрелки чтобы она не перекрывала вершину */
     const radius = 25;
     const adjustedToX = toX - (dx / distance) * radius;
     const adjustedToY = toY - (dy / distance) * radius;
@@ -105,13 +94,11 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     ctx.fillStyle = color;
     ctx.lineWidth = 2;
 
-    /* Линия стрелки */
     ctx.beginPath();
     ctx.moveTo(adjustedFromX, adjustedFromY);
     ctx.lineTo(adjustedToX, adjustedToY);
     ctx.stroke();
 
-    /* Голова стрелки */
     ctx.beginPath();
     ctx.moveTo(adjustedToX, adjustedToY);
     ctx.lineTo(
@@ -132,13 +119,11 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const distance = Math.sqrt(dx * dx + dy * dy);
     const radius = 25;
 
-    /* Координаты с учетом радиуса вершин */
     const startX = from.x + (dx / distance) * radius;
     const startY = from.y + (dy / distance) * radius;
     const endX = to.x - (dx / distance) * radius;
     const endY = to.y - (dy / distance) * radius;
 
-    /* Стиль ребра в зависимости от типа */
     const isInShortestPath = shortestPath && isEdgeInPath(edge, shortestPath.path);
     const isInMST = mst && mst.edges.some(e =>
       (e.from === edge.from && e.to === edge.to) ||
@@ -160,23 +145,19 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     ctx.lineWidth = lineWidth;
     ctx.lineCap = 'round';
 
-    /* Отрисовка ребра */
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     ctx.lineTo(endX, endY);
     ctx.stroke();
 
-    /* Стрелка для ориентированного графа */
     if (graphType === 'directed') {
       drawArrow(ctx, startX, startY, endX, endY, color);
     }
 
-    /* Вес ребра */
     if (edge.weight !== undefined && edge.weight !== 1) {
       const textX = (startX + endX) / 2;
       const textY = (startY + endY) / 2;
 
-      /* Фон для текста */
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.lineWidth = 1;
@@ -185,7 +166,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       ctx.fill();
       ctx.stroke();
 
-      /* Текст */
       ctx.fillStyle = color;
       ctx.font = 'bold 12px system-ui';
       ctx.textAlign = 'center';
@@ -204,18 +184,15 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     if (isInShortestPath) baseColor = '#dc3545';
     else if (isSelected) baseColor = '#007bff';
 
-    /* Простой сплошной цвет для вершины */
     ctx.fillStyle = baseColor;
     ctx.beginPath();
     ctx.arc(vertex.x, vertex.y, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    /* Обводка */
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    /* Текст ID вершины */
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 14px system-ui';
     ctx.textAlign = 'center';
@@ -240,27 +217,20 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    /* Устанавливаем размеры canvas */
     canvas.width = canvasSize.width;
     canvas.height = canvasSize.height;
 
-    /* Очистка canvas */
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    /* Рисуем фон с сеткой */
     drawGrid(ctx, canvas.width, canvas.height);
 
-    /* Рисуем рёбра */
     graphData.edges.forEach(edge => {
       const fromVertex = graphData.vertices.find(v => v.id === edge.from);
       const toVertex = graphData.vertices.find(v => v.id === edge.to);
 
       if (!fromVertex || !toVertex) return;
-
       drawEdge(ctx, fromVertex, toVertex, edge, graphData.type);
     });
 
-    /* Рисуем вершины */
     graphData.vertices.forEach(vertex => {
       drawVertex(ctx, vertex);
     });
@@ -278,7 +248,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
-    /* Проверяем, кликнули ли на вершину */
     for (const vertex of graphData.vertices) {
       const distance = Math.sqrt((x - vertex.x) ** 2 + (y - vertex.y) ** 2);
       if (distance <= 25) {
@@ -302,7 +271,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
-    /* Ограничиваем перемещение в пределах canvas */
     const boundedX = Math.max(25, Math.min(canvas.width - 25, x));
     const boundedY = Math.max(25, Math.min(canvas.height - 25, y));
 
@@ -316,7 +284,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   return (
     <div
       ref={containerRef}
-      className="graph-container"
       style={{
         position: 'relative',
         padding: '20px',
@@ -329,7 +296,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
         boxSizing: 'border-box'
       }}
     >
-      {/* Контейнер для canvas с элементами управления поверх него */}
       <div style={{
         position: 'relative',
         display: 'flex',
@@ -354,7 +320,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
           }}
         />
 
-        {/* Индикаторы состояния поверх canvas */}
         <div style={{
           position: 'absolute',
           top: '16px',
@@ -418,7 +383,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
           )}
         </div>
 
-        {/* Статистика графа поверх canvas */}
         <div style={{
           position: 'absolute',
           top: '16px',
@@ -459,8 +423,7 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
         </div>
       </div>
 
-      {/* Легенда графа под canvas */}
-      <div className="graph-legend" style={{
+      <div style={{
         marginTop: '16px',
         padding: '16px',
         backgroundColor: '#f8f9fa',
@@ -560,5 +523,3 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     </div>
   );
 };
-
-export default GraphVisualizer;
