@@ -1,6 +1,5 @@
 import React, {useCallback} from 'react';
 import {GraphData, GraphType} from '@/shared/types/grpah.interface';
-import {Graph} from '@/entities/graph/model/graph';
 
 interface GraphImportExportProps {
   graphData: GraphData;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {GraphCanvas} from '@/entities/graph/ui/graph-canvas';
-import {GraphData, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface';
+import { GraphCanvas } from '@/entities/graph/ui/graph-canvas';
+import { GraphData, ShortestPathResult, MSTResult } from '@/shared/types/grpah.interface';
 
 interface GraphVisualizerWidgetProps {
   graphData: GraphData;
@@ -9,6 +9,7 @@ interface GraphVisualizerWidgetProps {
   mst: MSTResult | null;
   onVertexSelect: (vertexId: number) => void;
   onVertexMove: (vertexId: number, x: number, y: number) => void;
+  isMobile?: boolean;
 }
 
 export const GraphVisualizerWidget: React.FC<GraphVisualizerWidgetProps> = (props) => {

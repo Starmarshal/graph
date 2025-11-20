@@ -1,16 +1,18 @@
 import React, {useState} from 'react';
-import {Vertex} from '@/shared/types/grpah.interface'
+import {Vertex} from '@/shared/types/grpah.interface';
 
 interface VertexControlsProps {
   vertices: Vertex[];
   onAddVertex: (id: number) => void;
   onRemoveVertex: (vertexId: number) => void;
+  isMobile?: boolean;
 }
 
 export const VertexControls: React.FC<VertexControlsProps> = ({
                                                                 vertices,
                                                                 onAddVertex,
-                                                                onRemoveVertex
+                                                                onRemoveVertex,
+                                                                isMobile = false
                                                               }) => {
   const [newVertexId, setNewVertexId] = useState<string>('');
 
@@ -25,13 +27,17 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
   };
 
   const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#0056b3';
-    e.currentTarget.style.transform = 'translateY(-1px)';
+    if (!isMobile) {
+      e.currentTarget.style.backgroundColor = '#0056b3';
+      e.currentTarget.style.transform = 'translateY(-1px)';
+    }
   };
 
   const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#007bff';
-    e.currentTarget.style.transform = 'translateY(0)';
+    if (!isMobile) {
+      e.currentTarget.style.backgroundColor = '#007bff';
+      e.currentTarget.style.transform = 'translateY(0)';
+    }
   };
 
   const handleAddVertex = (): void => {
@@ -53,28 +59,35 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
   };
 
   return (
-    <div style={{marginBottom: '24px'}}>
+    <div style={{marginBottom: isMobile ? '16px' : '24px'}}>
       <h4 style={{
-        marginBottom: '12px',
+        marginBottom: isMobile ? '8px' : '12px',
         color: '#333',
-        fontSize: '16px',
+        fontSize: isMobile ? '14px' : '16px',
         fontWeight: '600'
       }}>
         Управление вершинами
       </h4>
 
-      <div style={{display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '16px'}}>
+      <div style={{
+        display: 'flex',
+        gap: isMobile ? '6px' : '10px',
+        alignItems: 'center',
+        marginBottom: isMobile ? '12px' : '16px',
+        flexDirection: 'column',
+        width: '100%'
+      }}>
         <input
           type="number"
           placeholder="ID вершины"
           value={newVertexId}
           onChange={(e) => setNewVertexId(e.target.value)}
           style={{
-            padding: '10px 12px',
-            flex: 1,
+            padding: isMobile ? '8px 12px' : '10px 12px',
+            width: '100%',
             border: '1px solid #e1e5e9',
             borderRadius: '6px',
-            fontSize: '14px',
+            fontSize: isMobile ? '14px' : '14px',
             transition: 'all 0.2s ease'
           }}
           onFocus={handleInputFocus}
@@ -83,13 +96,14 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
         <button
           onClick={handleAddVertex}
           style={{
-            padding: '10px 20px',
+            padding: isMobile ? '8px 16px' : '10px 20px',
+            width: '100%',
             border: 'none',
             borderRadius: '6px',
             backgroundColor: '#007bff',
             color: 'white',
             fontWeight: '600',
-            fontSize: '14px',
+            fontSize: isMobile ? '13px' : '14px',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             whiteSpace: 'nowrap'
@@ -97,15 +111,15 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
           onMouseEnter={handleButtonMouseEnter}
           onMouseLeave={handleButtonMouseLeave}
         >
-          Добавить
+          Добавить вершину
         </button>
       </div>
 
       <div>
         <h5 style={{
-          marginBottom: '8px',
+          marginBottom: isMobile ? '6px' : '8px',
           color: '#666',
-          fontSize: '14px',
+          fontSize: isMobile ? '13px' : '14px',
           fontWeight: '600'
         }}>
           Существующие вершины ({vertices.length})
@@ -113,24 +127,26 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '8px',
-          maxHeight: '120px',
+          gap: isMobile ? '6px' : '8px',
+          maxHeight: isMobile ? '80px' : '120px',
           overflowY: 'auto',
-          padding: '12px',
+          padding: isMobile ? '8px' : '12px',
           backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
+          borderRadius: '6px',
+          border: '1px solid #e9ecef',
+          justifyContent: 'center', // Выравнивание по горизонтали по центру
+          alignItems: 'center' // Выравнивание по вертикали по центру
         }}>
           {vertices.map((vertex: Vertex) => (
             <div key={vertex.id} style={{
-              padding: '6px 12px',
+              padding: isMobile ? '4px 8px' : '6px 12px',
               backgroundColor: '#007bff',
               color: 'white',
-              borderRadius: '20px',
+              borderRadius: '16px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              fontSize: '13px',
+              gap: isMobile ? '4px' : '6px',
+              fontSize: isMobile ? '12px' : '13px',
               fontWeight: '500'
             }}>
               <span>Вершина {vertex.id}</span>
@@ -141,10 +157,10 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
                   color: 'white',
                   border: 'none',
                   borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
+                  width: isMobile ? '16px' : '18px',
+                  height: isMobile ? '16px' : '18px',
                   cursor: 'pointer',
-                  fontSize: '12px',
+                  fontSize: isMobile ? '10px' : '12px',
                   lineHeight: '1',
                   display: 'flex',
                   alignItems: 'center',
@@ -165,10 +181,10 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
           {vertices.length === 0 && (
             <div style={{
               color: '#6c757d',
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               textAlign: 'center',
               width: '100%',
-              padding: '8px'
+              padding: isMobile ? '4px' : '8px'
             }}>
               Нет вершин
             </div>

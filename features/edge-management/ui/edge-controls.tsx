@@ -6,13 +6,15 @@ interface EdgeControlsProps {
   vertices: Vertex[];
   onAddEdge: (from: number, to: number, weight: number) => void;
   onRemoveEdge: (from: number, to: number) => void;
+  isMobile?: boolean;
 }
 
 export const EdgeControls: React.FC<EdgeControlsProps> = ({
                                                             edges,
                                                             vertices,
                                                             onAddEdge,
-                                                            onRemoveEdge
+                                                            onRemoveEdge,
+                                                            isMobile = false
                                                           }) => {
   const [edgeFrom, setEdgeFrom] = useState<string>('');
   const [edgeTo, setEdgeTo] = useState<string>('');
@@ -29,13 +31,17 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
   };
 
   const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#0056b3';
-    e.currentTarget.style.transform = 'translateY(-1px)';
+    if (!isMobile) {
+      e.currentTarget.style.backgroundColor = '#0056b3';
+      e.currentTarget.style.transform = 'translateY(-1px)';
+    }
   };
 
   const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#007bff';
-    e.currentTarget.style.transform = 'translateY(0)';
+    if (!isMobile) {
+      e.currentTarget.style.backgroundColor = '#007bff';
+      e.currentTarget.style.transform = 'translateY(0)';
+    }
   };
 
   const handleAddEdge = (): void => {
@@ -65,29 +71,38 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
   };
 
   return (
-    <div style={{marginBottom: '24px'}}>
+    <div style={{marginBottom: isMobile ? '16px' : '24px'}}>
       <h4 style={{
-        marginBottom: '12px',
+        marginBottom: isMobile ? '8px' : '12px',
         color: '#333',
-        fontSize: '16px',
+        fontSize: isMobile ? '14px' : '16px',
         fontWeight: '600'
       }}>
         Управление рёбрами
       </h4>
 
-      <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr',
+        gridTemplateRows: 'auto auto',
+        gap: isMobile ? '4px' : '8px',
+        marginBottom: isMobile ? '8px' : '8px',
+        width: '100%'
+      }}>
         <input
           type="number"
           placeholder="Из вершины"
           value={edgeFrom}
           onChange={(e) => setEdgeFrom(e.target.value)}
           style={{
-            padding: '10px 12px',
-            width: '100px',
+            padding: isMobile ? '8px 10px' : '10px 12px',
+            width: '100%',
             border: '1px solid #e1e5e9',
             borderRadius: '6px',
-            fontSize: '14px',
-            transition: 'all 0.2s ease'
+            fontSize: isMobile ? '14px' : '14px',
+            transition: 'all 0.2s ease',
+            gridColumn: '1 / 2',
+            gridRow: '1 / 2'
           }}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
@@ -98,12 +113,14 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
           value={edgeTo}
           onChange={(e) => setEdgeTo(e.target.value)}
           style={{
-            padding: '10px 12px',
-            width: '100px',
+            padding: isMobile ? '8px 10px' : '10px 12px',
+            width: '100%',
             border: '1px solid #e1e5e9',
             borderRadius: '6px',
-            fontSize: '14px',
-            transition: 'all 0.2s ease'
+            fontSize: isMobile ? '14px' : '14px',
+            transition: 'all 0.2s ease',
+            gridColumn: '2 / 3',
+            gridRow: '1 / 2'
           }}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
@@ -114,12 +131,14 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
           value={edgeWeight}
           onChange={(e) => setEdgeWeight(e.target.value)}
           style={{
-            padding: '10px 12px',
-            width: '80px',
+            padding: isMobile ? '8px 10px' : '10px 12px',
+            width: '100%',
             border: '1px solid #e1e5e9',
             borderRadius: '6px',
-            fontSize: '14px',
-            transition: 'all 0.2s ease'
+            fontSize: isMobile ? '14px' : '14px',
+            transition: 'all 0.2s ease',
+            gridColumn: '1 / 2',
+            gridRow: '2 / 3'
           }}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
@@ -127,16 +146,18 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
         <button
           onClick={handleAddEdge}
           style={{
-            padding: '10px 16px',
+            padding: isMobile ? '8px 12px' : '10px 16px',
+            width: '100%',
             border: 'none',
             borderRadius: '6px',
             backgroundColor: '#007bff',
             color: 'white',
             fontWeight: '600',
-            fontSize: '14px',
+            fontSize: isMobile ? '13px' : '14px',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
-            whiteSpace: 'nowrap'
+            gridColumn: '2 / 3',
+            gridRow: '2 / 3'
           }}
           onMouseEnter={handleButtonMouseEnter}
           onMouseLeave={handleButtonMouseLeave}
@@ -147,9 +168,9 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
 
       <div>
         <h5 style={{
-          marginBottom: '8px',
+          marginBottom: isMobile ? '6px' : '8px',
           color: '#666',
-          fontSize: '14px',
+          fontSize: isMobile ? '13px' : '14px',
           fontWeight: '600'
         }}>
           Существующие рёбра ({edges.length})
@@ -157,24 +178,26 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '8px',
-          maxHeight: '120px',
+          gap: isMobile ? '6px' : '8px',
+          maxHeight: isMobile ? '80px' : '120px',
           overflowY: 'auto',
-          padding: '12px',
+          padding: isMobile ? '8px' : '12px',
           backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
+          borderRadius: '6px',
+          border: '1px solid #e9ecef',
+          justifyContent: 'center', // Выравнивание по центру
+          alignItems: 'center' // Выравнивание по вертикали по центру
         }}>
           {edges.map((edge: Edge, index: number) => (
             <div key={index} style={{
-              padding: '6px 12px',
+              padding: isMobile ? '4px 8px' : '6px 12px',
               backgroundColor: '#28a745',
               color: 'white',
-              borderRadius: '20px',
+              borderRadius: '16px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              fontSize: '13px',
+              gap: isMobile ? '4px' : '6px',
+              fontSize: isMobile ? '12px' : '13px',
               fontWeight: '500'
             }}>
               <span>{edge.from} → {edge.to} (вес: {edge.weight})</span>
@@ -185,10 +208,10 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
                   color: 'white',
                   border: 'none',
                   borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
+                  width: isMobile ? '16px' : '18px',
+                  height: isMobile ? '16px' : '18px',
                   cursor: 'pointer',
-                  fontSize: '12px',
+                  fontSize: isMobile ? '10px' : '12px',
                   lineHeight: '1',
                   display: 'flex',
                   alignItems: 'center',
@@ -209,16 +232,17 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
           {edges.length === 0 && (
             <div style={{
               color: '#6c757d',
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               textAlign: 'center',
               width: '100%',
-              padding: '8px'
+              padding: isMobile ? '4px' : '8px'
             }}>
               Нет рёбер
             </div>
           )}
         </div>
       </div>
+
     </div>
   );
 };

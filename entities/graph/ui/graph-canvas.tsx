@@ -1,5 +1,5 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface'
+import React, { useRef, useEffect, useState } from 'react';
+import { GraphData, Edge, Vertex, ShortestPathResult, MSTResult } from '@/shared/types/grpah.interface';
 
 interface GraphCanvasProps {
   graphData: GraphData;
@@ -8,6 +8,7 @@ interface GraphCanvasProps {
   mst: MSTResult | null;
   onVertexSelect: (vertexId: number) => void;
   onVertexMove: (vertexId: number, x: number, y: number) => void;
+  isMobile?: boolean;
 }
 
 export const GraphCanvas: React.FC<GraphCanvasProps> = ({
@@ -16,20 +17,61 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                                                           shortestPath,
                                                           mst,
                                                           onVertexSelect,
-                                                          onVertexMove
+                                                          onVertexMove,
+                                                          isMobile = false
                                                         }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState<number | null>(null);
-  const [canvasSize, setCanvasSize] = useState({width: 800, height: 600});
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  // Размеры рабочей области
+  // На десктопе - динамические, на мобильных - фиксированные
+  const getWorkspaceSize = () => {
+    if (isMobile) {
+      // На мобильных - фиксированная рабочая область 600x400
+      return { width: 600, height: 400 };
+    } else {
+      // На десктопе - рабочая область равна размеру канваса
+      return { width: canvasSize.width, height: canvasSize.height };
+    }
+  };
 
   const updateCanvasSize = () => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-      let newWidth = Math.min(containerWidth - 40, 1200);
-      newWidth = Math.max(newWidth, 400);
-      const newHeight = Math.round(newWidth * 0.75);
-      setCanvasSize({width: newWidth, height: newHeight});
+
+      if (isMobile) {
+        // На мобильных - полная ширина с небольшими отступами
+        const newWidth = containerWidth - 16;
+        const newHeight = Math.min(newWidth * 0.8, 400);
+        setCanvasSize({ width: newWidth, height: newHeight });
+
+        const workspace = getWorkspaceSize();
+        // Рассчитываем масштаб для фиксированной рабочей области
+        const scaleX = newWidth / workspace.width;
+        const scaleY = newHeight / workspace.height;
+        const calculatedScale = Math.min(scaleX, scaleY) * 0.95; // 95% чтобы был небольшой зазор
+
+        setScale(calculatedScale);
+        // Центрируем рабочую область
+        setOffset({
+          x: (newWidth / calculatedScale - workspace.width) / 2,
+          y: (newHeight / calculatedScale - workspace.height) / 2
+        });
+      } else {
+        // На десктопе - занимаем всё доступное пространство
+        const newWidth = containerWidth - 40;
+        const newHeight = Math.round(newWidth * 0.75);
+        setCanvasSize({ width: newWidth, height: newHeight });
+
+        // На десктопе масштаб 1:1, рабочая область = размеру канваса
+        setScale(1);
+        setOffset({ x: 0, y: 0 });
+      }
     }
   };
 
@@ -50,15 +92,25 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [isMobile]);
+
+  const applyTransform = (ctx: CanvasRenderingContext2D) => {
+    if (isMobile) {
+      ctx.scale(scale, scale);
+      ctx.translate(offset.x, offset.y);
+    }
+  };
 
   const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     ctx.fillStyle = '#fafbfc';
     ctx.fillRect(0, 0, width, height);
 
+    // Рисуем сетку всегда
     ctx.strokeStyle = '#e9ecef';
     ctx.lineWidth = 0.5;
-    const gridSize = 20;
+
+    const baseGridSize = 20;
+    const gridSize = isMobile ? baseGridSize : baseGridSize;
 
     for (let x = 0; x <= width; x += gridSize) {
       ctx.beginPath();
@@ -167,7 +219,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       ctx.stroke();
 
       ctx.fillStyle = color;
-      ctx.font = 'bold 12px system-ui';
+      ctx.font = `bold 12px system-ui`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(edge.weight.toString(), textX, textY);
@@ -194,7 +246,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     ctx.stroke();
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px system-ui';
+    ctx.font = `bold 14px system-ui`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(vertex.id.toString(), vertex.x, vertex.y);
@@ -221,7 +273,12 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     canvas.height = canvasSize.height;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGrid(ctx, canvas.width, canvas.height);
+
+    ctx.save();
+    applyTransform(ctx);
+
+    const workspace = getWorkspaceSize();
+    drawGrid(ctx, workspace.width, workspace.height);
 
     graphData.edges.forEach(edge => {
       const fromVertex = graphData.vertices.find(v => v.id === edge.from);
@@ -235,22 +292,39 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       drawVertex(ctx, vertex);
     });
 
-  }, [graphData, selectedVertices, shortestPath, mst, canvasSize]);
+    ctx.restore();
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  }, [graphData, selectedVertices, shortestPath, mst, canvasSize, isMobile, scale, offset]);
+
+  const getCanvasCoordinates = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
 
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    if (isMobile) {
+      // Для мобильных учитываем масштаб и смещение
+      const x = (clientX - rect.left - offset.x * scale) / scale;
+      const y = (clientY - rect.top - offset.y * scale) / scale;
+      return { x, y };
+    } else {
+      // Для десктопа - прямые координаты
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const { x, y } = getCanvasCoordinates(e.clientX, e.clientY);
 
     for (const vertex of graphData.vertices) {
       const distance = Math.sqrt((x - vertex.x) ** 2 + (y - vertex.y) ** 2);
-      if (distance <= 25) {
+      const radius = 25;
+      if (distance <= radius) {
         onVertexSelect(vertex.id);
         setIsDragging(vertex.id);
         return;
@@ -258,27 +332,46 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDragging) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const { x, y } = getCanvasCoordinates(e.clientX, e.clientY);
+    const workspace = getWorkspaceSize();
 
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-
-    const boundedX = Math.max(25, Math.min(canvas.width - 25, x));
-    const boundedY = Math.max(25, Math.min(canvas.height - 25, y));
+    const boundedX = Math.max(25, Math.min(workspace.width - 25, x));
+    const boundedY = Math.max(25, Math.min(workspace.height - 25, y));
 
     onVertexMove(isDragging, boundedX, boundedY);
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     setIsDragging(null);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setTouchStart({ x: touch.clientX, y: touch.clientY });
+      handlePointerDown({
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as React.PointerEvent<HTMLCanvasElement>);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 1 && isDragging) {
+      const touch = e.touches[0];
+      handlePointerMove({
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as React.PointerEvent<HTMLCanvasElement>);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+    handlePointerUp();
   };
 
   return (
@@ -286,14 +379,15 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       ref={containerRef}
       style={{
         position: 'relative',
-        padding: '20px',
+        padding: isMobile ? '8px' : '20px',
         backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+        borderRadius: isMobile ? '8px' : '12px',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
         border: '1px solid #e1e5e9',
         width: '100%',
         maxWidth: '100%',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        overflow: 'hidden'
       }}
     >
       <div style={{
@@ -304,39 +398,84 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       }}>
         <canvas
           ref={canvasRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           style={{
             border: '1px solid #e1e5e9',
-            borderRadius: '8px',
-            cursor: isDragging ? 'grabbing' : 'default',
+            borderRadius: isMobile ? '6px' : '8px',
+            cursor: isDragging ? 'grabbing' : 'pointer',
             backgroundColor: '#fafbfc',
-            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.04)',
+            boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.04)',
             display: 'block',
             maxWidth: '100%',
-            height: 'auto'
+            height: 'auto',
+            touchAction: isMobile ? 'pan-x pan-y' : 'none'
           }}
         />
 
+        {!isMobile && (
+          <div style={{
+            position: 'absolute',
+            top: '16px',
+            left: '16px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            padding: '16px',
+            borderRadius: '12px',
+            border: '1px solid #e1e5e9',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            backdropFilter: 'blur(8px)',
+            minWidth: '140px'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: '#333',
+              marginBottom: '12px',
+              fontWeight: '600',
+              borderBottom: '2px solid #f0f2f5',
+              paddingBottom: '8px'
+            }}>
+              Статистика графа
+            </div>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              fontSize: '13px'
+            }}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <span style={{color: '#666'}}>Вершины:</span>
+                <span style={{fontWeight: '600', color: '#007bff'}}>{graphData.vertices.length}</span>
+              </div>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <span style={{color: '#666'}}>Рёбра:</span>
+                <span style={{fontWeight: '600', color: '#28a745'}}>{graphData.edges.length}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div style={{
           position: 'absolute',
-          top: '16px',
-          right: '16px',
+          top: isMobile ? '8px' : '16px',
+          right: isMobile ? '8px' : '16px',
           display: 'flex',
           flexDirection: 'column',
           gap: '8px'
         }}>
           <div style={{
-            padding: '8px 16px',
+            padding: isMobile ? '6px 12px' : '8px 16px',
             backgroundColor: graphData.type === 'undirected' ? '#e8f5e8' : '#fff3e0',
             color: graphData.type === 'undirected' ? '#2e7d32' : '#e65100',
             borderRadius: '20px',
-            fontSize: '12px',
+            fontSize: isMobile ? '11px' : '12px',
             fontWeight: '600',
             border: graphData.type === 'undirected' ? '1px solid #c8e6c9' : '1px solid #ffcc80',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
@@ -344,98 +483,89 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           }}>
             {graphData.type === 'undirected' ? (
               <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width={isMobile ? "12" : "14"} height={isMobile ? "12" : "14"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M8 12h8M12 16V8M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/>
                 </svg>
-                Неориентированный
+                {!isMobile && 'Неориентированный'}
               </>
             ) : (
               <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path
-                    d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-2-8l4-4m0 4l-4-4"/>
+                <svg width={isMobile ? "12" : "14"} height={isMobile ? "12" : "14"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-2-8l4-4m0 4l-4-4"/>
                 </svg>
-                Ориентированный
+                {!isMobile && 'Ориентированный'}
               </>
             )}
           </div>
 
           {isDragging && (
             <div style={{
-              padding: '6px 12px',
+              padding: isMobile ? '4px 8px' : '6px 12px',
               backgroundColor: '#e3f2fd',
               color: '#1565c0',
               borderRadius: '20px',
-              fontSize: '12px',
+              fontSize: isMobile ? '10px' : '12px',
               fontWeight: '600',
               border: '1px solid #bbdefb',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               backdropFilter: 'blur(4px)'
             }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width={isMobile ? "10" : "14"} height={isMobile ? "10" : "14"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
-              Перетаскивание
+              {!isMobile && 'Перетаскивание'}
             </div>
           )}
         </div>
 
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          padding: '16px',
-          borderRadius: '12px',
-          border: '1px solid #e1e5e9',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          backdropFilter: 'blur(8px)',
-          minWidth: '140px'
-        }}>
+        {isMobile && (
           <div style={{
-            fontSize: '14px',
-            color: '#333',
-            marginBottom: '12px',
-            fontWeight: '600',
-            borderBottom: '2px solid #f0f2f5',
-            paddingBottom: '8px'
-          }}>
-            Статистика графа
-          </div>
-          <div style={{
+            position: 'absolute',
+            bottom: '8px',
+            left: '8px',
+            right: '8px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            border: '1px solid #e1e5e9',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(4px)',
             display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            fontSize: '13px'
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '12px'
           }}>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span style={{color: '#666'}}>Вершины:</span>
-              <span style={{fontWeight: '600', color: '#007bff'}}>{graphData.vertices.length}</span>
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span style={{color: '#666'}}>Рёбра:</span>
-              <span style={{fontWeight: '600', color: '#28a745'}}>{graphData.edges.length}</span>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+                <div style={{width: '8px', height: '8px', backgroundColor: '#007bff', borderRadius: '50%'}}></div>
+                <span style={{color: '#666'}}>Вершин: {graphData.vertices.length}</span>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+                <div style={{width: '8px', height: '8px', backgroundColor: '#28a745', borderRadius: '50%'}}></div>
+                <span style={{color: '#666'}}>Рёбер: {graphData.edges.length}</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
+      {/* Легенда графа */}
       <div style={{
-        marginTop: '16px',
-        padding: '16px',
+        marginTop: isMobile ? '12px' : '16px',
+        padding: isMobile ? '12px' : '16px',
         backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
+        borderRadius: isMobile ? '6px' : '8px',
         border: '1px solid #e9ecef',
         width: '100%',
         boxSizing: 'border-box'
       }}>
         <h5 style={{
-          margin: '0 0 12px 0',
+          margin: '0 0 8px 0',
           color: '#333',
-          fontSize: '14px',
+          fontSize: isMobile ? '13px' : '14px',
           fontWeight: '600',
           textAlign: 'center'
         }}>
@@ -443,7 +573,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
         </h5>
         <div style={{
           display: 'flex',
-          gap: '20px',
+          gap: isMobile ? '12px' : '16px',
           justifyContent: 'center',
           flexWrap: 'wrap',
           alignItems: 'center'
@@ -454,34 +584,37 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
             {color: '#dc3545', label: 'Кратчайший путь', type: 'node'},
             {color: '#28a745', label: 'MST ребро', type: 'edge'},
             {color: '#6c757d', label: 'Обычное ребро', type: 'line'},
-            {color: '#6c757d', label: 'Ориентированное ребро', type: 'arrow'}
+            ...(graphData.type === 'directed' ? [
+              {color: '#6c757d', label: 'Ориентированное ребро', type: 'arrow'}
+            ] : [])
           ].map((item, index) => (
             <div
               key={index}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '6px 12px',
+                gap: isMobile ? '4px' : '6px',
+                padding: isMobile ? '4px 8px' : '6px 10px',
                 backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderRadius: '20px',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                borderRadius: '12px',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
               }}
             >
               {item.type === 'node' && (
                 <div
                   style={{
-                    width: '16px',
-                    height: '16px',
+                    width: isMobile ? '12px' : '14px',
+                    height: isMobile ? '12px' : '14px',
                     backgroundColor: item.color,
                     borderRadius: '50%',
                     border: '2px solid white',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+                    flexShrink: 0
                   }}
                 />
               )}
               {item.type === 'arrow' && (
-                <svg width="20" height="12" viewBox="0 0 20 12">
+                <svg width={isMobile ? "20" : "24"} height={isMobile ? "12" : "14"} viewBox="0 0 20 12">
                   <defs>
                     <marker id={`arrowhead-${index}`} markerWidth="10" markerHeight="7"
                             refX="9" refY="3.5" orient="auto">
@@ -495,24 +628,27 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
               )}
               {item.type === 'line' && (
                 <div style={{
-                  width: '20px',
-                  height: '2px',
+                  width: isMobile ? '16px' : '20px',
+                  height: isMobile ? '2px' : '3px',
                   backgroundColor: item.color,
-                  borderRadius: '1px'
+                  borderRadius: '1px',
+                  flexShrink: 0
                 }}/>
               )}
               {item.type === 'edge' && (
                 <div style={{
-                  width: '20px',
-                  height: '3px',
+                  width: isMobile ? '16px' : '20px',
+                  height: isMobile ? '3px' : '4px',
                   backgroundColor: item.color,
-                  borderRadius: '2px'
+                  borderRadius: '2px',
+                  flexShrink: 0
                 }}/>
               )}
               <span style={{
-                fontSize: '13px',
+                fontSize: isMobile ? '11px' : '12px',
                 color: '#495057',
-                fontWeight: '500'
+                fontWeight: '500',
+                whiteSpace: 'nowrap'
               }}>
                 {item.label}
               </span>
