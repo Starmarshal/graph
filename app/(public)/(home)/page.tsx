@@ -1,9 +1,16 @@
-import React, {useState} from 'react';
-import GraphVisualizer from '../components/GraphVisualizer';
-import GraphControls from '../components/GraphControls';
-import {GraphData, ShortestPathResult, MSTResult, DistanceResult, ConnectivityResult, Vertex} from '../lib/types';
+'use client';
 
-/* Новые интерфейсы для информации о графе */
+import GraphVisualizer from '@/components/GraphVisualizer';
+import GraphControls from '@/components/GraphControls';
+import {
+  GraphData,
+  ShortestPathResult,
+  MSTResult,
+  DistanceResult,
+  ConnectivityResult
+} from '@/shared/types/grpah.interface';
+import {useState} from 'react';
+
 interface VerticesListResult {
   vertices: number[];
 }
@@ -97,7 +104,7 @@ const Home: React.FC = () => {
 
   const exportGraph = () => {
     /* Создаем временный граф для экспорта */
-    const {Graph} = require('../lib/graph');
+    const {Graph} = require('@/features/graph');
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
@@ -109,6 +116,29 @@ const Home: React.FC = () => {
     a.download = `graph_${graphData.type}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Исправленные обработчики событий
+  const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.currentTarget as HTMLButtonElement;
+    target.style.backgroundColor = '#f7fafc';
+    target.style.borderColor = '#cbd5e0';
+  };
+
+  const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.currentTarget as HTMLButtonElement;
+    target.style.backgroundColor = 'white';
+    target.style.borderColor = '#e2e8f0';
+  };
+
+  const handleExportButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.currentTarget as HTMLButtonElement;
+    target.style.backgroundColor = '#38a169';
+  };
+
+  const handleExportButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.currentTarget as HTMLButtonElement;
+    target.style.backgroundColor = '#48bb78';
   };
 
   return (
@@ -180,14 +210,8 @@ const Home: React.FC = () => {
               alignItems: 'center',
               gap: '6px'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f7fafc';
-              e.target.style.borderColor = '#cbd5e0';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'white';
-              e.target.style.borderColor = '#e2e8f0';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
@@ -211,14 +235,8 @@ const Home: React.FC = () => {
               alignItems: 'center',
               gap: '6px'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f7fafc';
-              e.target.style.borderColor = '#cbd5e0';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'white';
-              e.target.style.borderColor = '#e2e8f0';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 5v14M5 12h14"/>
@@ -242,12 +260,8 @@ const Home: React.FC = () => {
               alignItems: 'center',
               gap: '6px'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#38a169';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#48bb78';
-            }}
+            onMouseEnter={handleExportButtonMouseEnter}
+            onMouseLeave={handleExportButtonMouseLeave}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -702,8 +716,6 @@ const Home: React.FC = () => {
             onMST={setMST}
             onDistances={setDistances}
             onConnectivity={setConnectivity}
-            onVerticesList={setVerticesList}
-            onEdgesList={setEdgesList}
           />
         </div>
       </div>

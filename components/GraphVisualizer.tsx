@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
-import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '../lib/types';
+import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface';
 
 interface GraphVisualizerProps {
   graphData: GraphData;
@@ -19,7 +19,47 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
                                                            onVertexMove
                                                          }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState<number | null>(null);
+  const [canvasSize, setCanvasSize] = useState({width: 800, height: 600});
+
+  /* Функция для обновления размеров canvas */
+  const updateCanvasSize = () => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.clientWidth;
+
+      /* Рассчитываем ширину canvas в зависимости от ширины контейнера */
+      let newWidth = Math.min(containerWidth - 40, 1200); /* Максимальная ширина 1200px */
+      newWidth = Math.max(newWidth, 400); /* Минимальная ширина 400px */
+
+      /* Сохраняем соотношение сторон 4:3 */
+      const newHeight = Math.round(newWidth * 0.75);
+
+      setCanvasSize({width: newWidth, height: newHeight});
+    }
+  };
+
+  /* Обработчик изменения размера окна */
+  useEffect(() => {
+    updateCanvasSize();
+
+    const handleResize = () => {
+      updateCanvasSize();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    /* Используем ResizeObserver для отслеживания изменений размера контейнера */
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     ctx.fillStyle = '#fafbfc';
@@ -200,6 +240,10 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    /* Устанавливаем размеры canvas */
+    canvas.width = canvasSize.width;
+    canvas.height = canvasSize.height;
+
     /* Очистка canvas */
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -221,17 +265,20 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       drawVertex(ctx, vertex);
     });
 
-  }, [graphData, selectedVertices, shortestPath, mst]);
+  }, [graphData, selectedVertices, shortestPath, mst, canvasSize]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
-    // Проверяем, кликнули ли на вершину
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    /* Проверяем, кликнули ли на вершину */
     for (const vertex of graphData.vertices) {
       const distance = Math.sqrt((x - vertex.x) ** 2 + (y - vertex.y) ** 2);
       if (distance <= 25) {
@@ -249,8 +296,11 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     /* Ограничиваем перемещение в пределах canvas */
     const boundedX = Math.max(25, Math.min(canvas.width - 25, x));
@@ -264,41 +314,160 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   };
 
   return (
-    <div className="graph-container" style={{
-      position: 'relative',
-      padding: '20px',
-      backgroundColor: '#ffffff',
-      borderRadius: '12px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-      border: '1px solid #e1e5e9'
-    }}>
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={600}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        style={{
-          border: '1px solid #e1e5e9',
-          borderRadius: '8px',
-          cursor: isDragging ? 'grabbing' : 'default',
-          backgroundColor: '#fafbfc',
-          boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.04)',
-          display: 'block',
-          margin: '0 auto',
-          transition: 'all 0.2s ease'
-        }}
-      />
+    <div
+      ref={containerRef}
+      className="graph-container"
+      style={{
+        position: 'relative',
+        padding: '20px',
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #e1e5e9',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box'
+      }}
+    >
+      {/* Контейнер для canvas с элементами управления поверх него */}
+      <div style={{
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%'
+      }}>
+        <canvas
+          ref={canvasRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          style={{
+            border: '1px solid #e1e5e9',
+            borderRadius: '8px',
+            cursor: isDragging ? 'grabbing' : 'default',
+            backgroundColor: '#fafbfc',
+            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.04)',
+            display: 'block',
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
 
-      {/* Обновленная легенда с указателями для ориентированного графа */}
+        {/* Индикаторы состояния поверх canvas */}
+        <div style={{
+          position: 'absolute',
+          top: '16px',
+          right: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
+        }}>
+          <div style={{
+            padding: '8px 16px',
+            backgroundColor: graphData.type === 'undirected' ? '#e8f5e8' : '#fff3e0',
+            color: graphData.type === 'undirected' ? '#2e7d32' : '#e65100',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: '600',
+            border: graphData.type === 'undirected' ? '1px solid #c8e6c9' : '1px solid #ffcc80',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            backdropFilter: 'blur(4px)'
+          }}>
+            {graphData.type === 'undirected' ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M8 12h8M12 16V8M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/>
+                </svg>
+                Неориентированный
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path
+                    d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-2-8l4-4m0 4l-4-4"/>
+                </svg>
+                Ориентированный
+              </>
+            )}
+          </div>
+
+          {isDragging && (
+            <div style={{
+              padding: '6px 12px',
+              backgroundColor: '#e3f2fd',
+              color: '#1565c0',
+              borderRadius: '20px',
+              fontSize: '12px',
+              fontWeight: '600',
+              border: '1px solid #bbdefb',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backdropFilter: 'blur(4px)'
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Перетаскивание
+            </div>
+          )}
+        </div>
+
+        {/* Статистика графа поверх canvas */}
+        <div style={{
+          position: 'absolute',
+          top: '16px',
+          left: '16px',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          padding: '16px',
+          borderRadius: '12px',
+          border: '1px solid #e1e5e9',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          backdropFilter: 'blur(8px)',
+          minWidth: '140px'
+        }}>
+          <div style={{
+            fontSize: '14px',
+            color: '#333',
+            marginBottom: '12px',
+            fontWeight: '600',
+            borderBottom: '2px solid #f0f2f5',
+            paddingBottom: '8px'
+          }}>
+            Статистика графа
+          </div>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            fontSize: '13px'
+          }}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{color: '#666'}}>Вершины:</span>
+              <span style={{fontWeight: '600', color: '#007bff'}}>{graphData.vertices.length}</span>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{color: '#666'}}>Рёбра:</span>
+              <span style={{fontWeight: '600', color: '#28a745'}}>{graphData.edges.length}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Легенда графа под canvas */}
       <div className="graph-legend" style={{
         marginTop: '16px',
         padding: '16px',
         backgroundColor: '#f8f9fa',
         borderRadius: '8px',
-        border: '1px solid #e9ecef'
+        border: '1px solid #e9ecef',
+        width: '100%',
+        boxSizing: 'border-box'
       }}>
         <h5 style={{
           margin: '0 0 12px 0',
@@ -386,108 +555,6 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
               </span>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Индикаторы состояния */}
-      <div style={{
-        position: 'absolute',
-        top: '24px',
-        right: '34px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px'
-      }}>
-        <div style={{
-          padding: '8px 16px',
-          backgroundColor: graphData.type === 'undirected' ? '#e8f5e8' : '#fff3e0',
-          color: graphData.type === 'undirected' ? '#2e7d32' : '#e65100',
-          borderRadius: '20px',
-          fontSize: '12px',
-          fontWeight: '600',
-          border: graphData.type === 'undirected' ? '1px solid #c8e6c9' : '1px solid #ffcc80',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          {graphData.type === 'undirected' ? (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M8 12h8M12 16V8M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/>
-              </svg>
-              Неориентированный
-            </>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path
-                  d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-2-8l4-4m0 4l-4-4"/>
-              </svg>
-              Ориентированный
-            </>
-          )}
-        </div>
-
-        {isDragging && (
-          <div style={{
-            padding: '6px 12px',
-            backgroundColor: '#e3f2fd',
-            color: '#1565c0',
-            borderRadius: '20px',
-            fontSize: '12px',
-            fontWeight: '600',
-            border: '1px solid #bbdefb',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-            Перетаскивание
-          </div>
-        )}
-      </div>
-
-      {/* Статистика графа */}
-      <div style={{
-        position: 'absolute',
-        top: '24px',
-        left: '34px',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        padding: '16px',
-        borderRadius: '12px',
-        border: '1px solid #e1e5e9',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        backdropFilter: 'blur(8px)',
-        minWidth: '140px'
-      }}>
-        <div style={{
-          fontSize: '14px',
-          color: '#333',
-          marginBottom: '12px',
-          fontWeight: '600',
-          borderBottom: '2px solid #f0f2f5',
-          paddingBottom: '8px'
-        }}>
-          Статистика графа
-        </div>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          fontSize: '13px'
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <span style={{color: '#666'}}>Вершины:</span>
-            <span style={{fontWeight: '600', color: '#007bff'}}>{graphData.vertices.length}</span>
-          </div>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <span style={{color: '#666'}}>Рёбра:</span>
-            <span style={{fontWeight: '600', color: '#28a745'}}>{graphData.edges.length}</span>
-          </div>
         </div>
       </div>
     </div>

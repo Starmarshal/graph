@@ -1,5 +1,3 @@
-export type GraphType = 'directed' | 'undirected';
-
 export interface Vertex {
   id: number;
   x: number;
@@ -11,6 +9,8 @@ export interface Edge {
   to: number;
   weight: number;
 }
+
+export type GraphType = 'undirected' | 'directed';
 
 export interface GraphData {
   vertices: Vertex[];
@@ -29,8 +29,8 @@ export interface MSTResult {
 }
 
 export interface DistanceResult {
-  distances: Map<number, number>;
   fromVertex: number;
+  distances: Map<number, number>;
 }
 
 export interface ConnectivityResult {

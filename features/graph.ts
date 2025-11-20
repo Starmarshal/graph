@@ -1,4 +1,12 @@
-import {GraphType, Vertex, Edge, ShortestPathResult, MSTResult, DistanceResult, ConnectivityResult} from './types';
+import {
+  GraphType,
+  Vertex,
+  Edge,
+  ShortestPathResult,
+  MSTResult,
+  DistanceResult,
+  ConnectivityResult
+} from '@/shared/types/grpah.interface';
 
 export class Graph {
   private adjList: Map<number, Map<number, number>>;

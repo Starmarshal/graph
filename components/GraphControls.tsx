@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
-import { GraphData, ShortestPathResult, MSTResult, DistanceResult, ConnectivityResult, Vertex, Edge, GraphType } from './types';
-import { Graph } from '../lib/graph';
+import React, {useState} from 'react';
+import {
+  GraphData,
+  ShortestPathResult,
+  MSTResult,
+  DistanceResult,
+  ConnectivityResult,
+  Vertex,
+  Edge,
+  GraphType
+} from '@/shared/types/grpah.interface';
+import {Graph} from '@/features/graph';
 
 interface GraphControlsProps {
   graphData: GraphData;
@@ -28,13 +37,13 @@ const GraphControls: React.FC<GraphControlsProps> = ({
                                                        onDistances,
                                                        onConnectivity
                                                      }) => {
-  const [newVertexId, setNewVertexId] = useState('');
-  const [edgeFrom, setEdgeFrom] = useState('');
-  const [edgeTo, setEdgeTo] = useState('');
-  const [edgeWeight, setEdgeWeight] = useState('');
-  const [startVertex, setStartVertex] = useState('');
-  const [endVertex, setEndVertex] = useState('');
-  const [distanceVertex, setDistanceVertex] = useState('');
+  const [newVertexId, setNewVertexId] = useState<string>('');
+  const [edgeFrom, setEdgeFrom] = useState<string>('');
+  const [edgeTo, setEdgeTo] = useState<string>('');
+  const [edgeWeight, setEdgeWeight] = useState<string>('');
+  const [startVertex, setStartVertex] = useState<string>('');
+  const [endVertex, setEndVertex] = useState<string>('');
+  const [distanceVertex, setDistanceVertex] = useState<string>('');
   const [verticesList, setVerticesList] = useState<VerticesListResult | null>(null);
   const [edgesList, setEdgesList] = useState<EdgesListResult | null>(null);
 
@@ -45,7 +54,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     const edges: Edge[] = [];
 
     if (lines.length === 0) {
-      return { vertices, edges, type: graphType };
+      return {vertices, edges, type: graphType};
     }
 
     /* Определяем формат файла */
@@ -53,17 +62,17 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       /* Формат: списки смежности */
       parseAdjacencyList(lines, vertices, edges, graphType);
     } else if (lines[0].split(/\s+/).length <= 3) {
-      // Формат: список рёбер
+      /* Формат: список рёбер */
       parseEdgeList(lines, vertices, edges, graphType);
     } else {
-      // Формат: матрица смежности
+      /* Формат: матрица смежности */
       parseAdjacencyMatrix(lines, vertices, edges, graphType);
     }
 
-    return { vertices, edges, type: graphType };
+    return {vertices, edges, type: graphType};
   };
 
-  const parseAdjacencyMatrix = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType) => {
+  const parseAdjacencyMatrix = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType): void => {
     const n = lines.length;
 
     /* Создаём вершины */
@@ -85,13 +94,13 @@ const GraphControls: React.FC<GraphControlsProps> = ({
         const toVertex = j + 1;
 
         if (weight !== 0 && fromVertex !== toVertex) {
-          edges.push({ from: fromVertex, to: toVertex, weight });
+          edges.push({from: fromVertex, to: toVertex, weight});
         }
       }
     }
   };
 
-  const parseAdjacencyList = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType) => {
+  const parseAdjacencyList = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType): void => {
     const vertexSet = new Set<number>();
 
     /* Парсим списки смежности */
@@ -103,10 +112,12 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       if (parts[1] && parts[1].trim()) {
         const neighbors = parts[1].trim().split(/\s+/);
         neighbors.forEach(neighborStr => {
-          const [toVertex, weight] = neighborStr.split(':').map(Number);
-          if (toVertex && weight) {
+          const neighborParts = neighborStr.split(':').map(Number);
+          const toVertex = neighborParts[0];
+          const weight = neighborParts[1] || 1; /* вес по умолчанию 1 */
+          if (toVertex && !isNaN(toVertex)) {
             vertexSet.add(toVertex);
-            edges.push({ from: fromVertex, to: toVertex, weight });
+            edges.push({from: fromVertex, to: toVertex, weight: isNaN(weight) ? 1 : weight});
           }
         });
       }
@@ -122,7 +133,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     });
   };
 
-  const parseEdgeList = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType) => {
+  const parseEdgeList = (lines: string[], vertices: Vertex[], edges: Edge[], graphType: GraphType): void => {
     const vertexSet = new Set<number>();
 
     /* Парсим список рёбер */
@@ -133,9 +144,22 @@ const GraphControls: React.FC<GraphControlsProps> = ({
         const toVertex = parseInt(parts[1]);
         const weight = parseFloat(parts[2]);
 
-        vertexSet.add(fromVertex);
-        vertexSet.add(toVertex);
-        edges.push({ from: fromVertex, to: toVertex, weight });
+        if (!isNaN(fromVertex) && !isNaN(toVertex) && !isNaN(weight)) {
+          vertexSet.add(fromVertex);
+          vertexSet.add(toVertex);
+          edges.push({from: fromVertex, to: toVertex, weight});
+        }
+      } else if (parts.length === 2) {
+        /* Если вес не указан, используем вес по умолчанию 1 */
+        const fromVertex = parseInt(parts[0]);
+        const toVertex = parseInt(parts[1]);
+        const weight = 1;
+
+        if (!isNaN(fromVertex) && !isNaN(toVertex)) {
+          vertexSet.add(fromVertex);
+          vertexSet.add(toVertex);
+          edges.push({from: fromVertex, to: toVertex, weight});
+        }
       }
     });
 
@@ -149,7 +173,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     });
   };
 
-  const createEmptyGraph = () => {
+  const createEmptyGraph = (): void => {
     const newData: GraphData = {
       vertices: [],
       edges: [],
@@ -159,7 +183,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     clearResults();
   };
 
-  const loadGraphFromFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const loadGraphFromFile = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -180,7 +204,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     event.target.value = '';
   };
 
-  const addVertex = () => {
+  const addVertex = (): void => {
     if (!newVertexId) return;
 
     const id = parseInt(newVertexId);
@@ -189,12 +213,12 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       return;
     }
 
-    if (graphData.vertices.find(v => v.id === id)) {
+    if (graphData.vertices.find((v: Vertex) => v.id === id)) {
       alert('Вершина с таким ID уже существует!');
       return;
     }
 
-    const newVertex = {
+    const newVertex: Vertex = {
       id,
       x: Math.random() * 600 + 100,
       y: Math.random() * 400 + 100
@@ -209,7 +233,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     setNewVertexId('');
   };
 
-  const addEdge = () => {
+  const addEdge = (): void => {
     if (!edgeFrom || !edgeTo || !edgeWeight) return;
 
     const from = parseInt(edgeFrom);
@@ -221,16 +245,16 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       return;
     }
 
-    const fromVertex = graphData.vertices.find(v => v.id === from);
-    const toVertex = graphData.vertices.find(v => v.id === to);
+    const fromVertex = graphData.vertices.find((v: Vertex) => v.id === from);
+    const toVertex = graphData.vertices.find((v: Vertex) => v.id === to);
 
     if (!fromVertex || !toVertex) {
       alert('Одна или обе вершины не существуют!');
       return;
     }
 
-    const newEdge = { from, to, weight };
-    const edgeExists = graphData.edges.some(e =>
+    const newEdge: Edge = {from, to, weight};
+    const edgeExists = graphData.edges.some((e: Edge) =>
       (e.from === from && e.to === to) || (graphData.type === 'undirected' && e.from === to && e.to === from)
     );
 
@@ -250,21 +274,21 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     setEdgeWeight('');
   };
 
-  const removeVertex = (vertexId: number) => {
+  const removeVertex = (vertexId: number): void => {
     const newData: GraphData = {
       ...graphData,
-      vertices: graphData.vertices.filter(v => v.id !== vertexId),
-      edges: graphData.edges.filter(e => e.from !== vertexId && e.to !== vertexId)
+      vertices: graphData.vertices.filter((v: Vertex) => v.id !== vertexId),
+      edges: graphData.edges.filter((e: Edge) => e.from !== vertexId && e.to !== vertexId)
     };
 
     onGraphUpdate(newData);
     clearResults();
   };
 
-  const removeEdge = (from: number, to: number) => {
+  const removeEdge = (from: number, to: number): void => {
     const newData: GraphData = {
       ...graphData,
-      edges: graphData.edges.filter(e => !(e.from === from && e.to === to))
+      edges: graphData.edges.filter((e: Edge) => !(e.from === from && e.to === to))
     };
 
     onGraphUpdate(newData);
@@ -272,21 +296,21 @@ const GraphControls: React.FC<GraphControlsProps> = ({
   };
 
   /* Функции для информации о графе */
-  const listVertices = () => {
+  const listVertices = (): void => {
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const vertices = graph.getVertices();
-    setVerticesList({ vertices });
+    setVerticesList({vertices});
   };
 
-  const listEdges = () => {
+  const listEdges = (): void => {
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const edges = graph.listOfEdges();
-    setEdgesList({ edges });
+    setEdgesList({edges});
   };
 
-  const findShortestPath = () => {
+  const findShortestPath = (): void => {
     if (!startVertex || !endVertex) {
       alert('Введите начальную и конечную вершины!');
       return;
@@ -311,7 +335,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     }
   };
 
-  const findDistances = () => {
+  const findDistances = (): void => {
     if (!distanceVertex) {
       alert('Введите начальную вершину!');
       return;
@@ -325,7 +349,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     }
 
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
 
     try {
       const result = graph.distancesFromVertex(start);
@@ -335,9 +359,9 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     }
   };
 
-  const findMST = () => {
+  const findMST = (): void => {
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
 
     try {
       const result = graph.kruskalMST();
@@ -347,9 +371,9 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     }
   };
 
-  const checkConnectivity = () => {
+  const checkConnectivity = (): void => {
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
 
     try {
       const result = graphData.type === 'undirected'
@@ -361,7 +385,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     }
   };
 
-  const clearResults = () => {
+  const clearResults = (): void => {
     onShortestPath(null);
     onMST(null);
     onDistances(null);
@@ -370,7 +394,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     setEdgesList(null);
   };
 
-  const toggleGraphType = () => {
+  const toggleGraphType = (): void => {
     const newType = graphData.type === 'undirected' ? 'directed' : 'undirected';
     onGraphUpdate({
       ...graphData,
@@ -379,18 +403,51 @@ const GraphControls: React.FC<GraphControlsProps> = ({
     clearResults();
   };
 
-  const exportGraph = () => {
+  const exportGraph = (): void => {
     const graph = new Graph();
-    graph.initializeFromData(graphData.vertices, graphData.edges);
+    graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'graph.txt';
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  /* Обработчики событий для кнопок */
+  const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.currentTarget.style.backgroundColor = '#0056b3';
+    e.currentTarget.style.transform = 'translateY(-1px)';
+  };
+
+  const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.currentTarget.style.backgroundColor = '#007bff';
+    e.currentTarget.style.transform = 'translateY(0)';
+  };
+
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>): void => {
+    e.target.style.borderColor = '#007bff';
+    e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
+  };
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>): void => {
+    e.target.style.borderColor = '#e1e5e9';
+    e.target.style.boxShadow = 'none';
+  };
+
+  const handleLabelMouseEnter = (e: React.MouseEvent<HTMLLabelElement>): void => {
+    e.currentTarget.style.borderColor = '#007bff';
+    e.currentTarget.style.backgroundColor = '#f0f8ff';
+    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
+  };
+
+  const handleLabelMouseLeave = (e: React.MouseEvent<HTMLLabelElement>): void => {
+    e.currentTarget.style.borderColor = '#e1e5e9';
+    e.currentTarget.style.backgroundColor = '#fafbfc';
+    e.currentTarget.style.boxShadow = 'none';
   };
 
   return (
@@ -418,7 +475,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       </h3>
 
       {/* Загрузка из файла */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
@@ -428,33 +485,27 @@ const GraphControls: React.FC<GraphControlsProps> = ({
           Загрузить из файла
         </h4>
 
-        <label style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          padding: '16px',
-          border: '2px dashed #e1e5e9',
-          borderRadius: '8px',
-          backgroundColor: '#fafbfc',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          marginBottom: '8px'
-        }}
-               onMouseEnter={(e) => {
-                 e.currentTarget.style.borderColor = '#007bff';
-                 e.currentTarget.style.backgroundColor = '#f0f8ff';
-                 e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-               }}
-               onMouseLeave={(e) => {
-                 e.currentTarget.style.borderColor = '#e1e5e9';
-                 e.currentTarget.style.backgroundColor = '#fafbfc';
-                 e.currentTarget.style.boxShadow = 'none';
-               }}>
+        <label
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '16px',
+            border: '2px dashed #e1e5e9',
+            borderRadius: '8px',
+            backgroundColor: '#fafbfc',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            marginBottom: '8px'
+          }}
+          onMouseEnter={handleLabelMouseEnter}
+          onMouseLeave={handleLabelMouseLeave}
+        >
           <input
             type="file"
             accept=".txt"
             onChange={loadGraphFromFile}
-            style={{ display: 'none' }}
+            style={{display: 'none'}}
           />
 
           <svg
@@ -463,7 +514,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            style={{ color: '#007bff' }}
+            style={{color: '#007bff'}}
             strokeWidth="2"
           >
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -503,14 +554,14 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       </div>
 
       {/* Добавить вершину */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
           fontSize: '16px',
           fontWeight: '600'
         }}>Добавить вершину</h4>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
           <input
             type="number"
             placeholder="ID вершины"
@@ -524,14 +575,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <button
             onClick={addVertex}
@@ -547,14 +592,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#0056b3';
-              e.target.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#007bff';
-              e.target.style.transform = 'translateY(0)';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             Добавить
           </button>
@@ -562,14 +601,14 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       </div>
 
       {/* Добавить ребро */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
           fontSize: '16px',
           fontWeight: '600'
         }}>Добавить ребро</h4>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+        <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
           <input
             type="number"
             placeholder="Из вершины"
@@ -583,14 +622,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <input
             type="number"
@@ -605,14 +638,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <input
             type="number"
@@ -627,14 +654,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <button
             onClick={addEdge}
@@ -650,14 +671,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#0056b3';
-              e.target.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#007bff';
-              e.target.style.transform = 'translateY(0)';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             Добавить ребро
           </button>
@@ -665,18 +680,18 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       </div>
 
       {/* Информация о графе */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
           fontSize: '16px',
           fontWeight: '600'
         }}>Информация о графе</h4>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+        <div style={{display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap'}}>
           {[
-            { label: 'Список вершин', onClick: listVertices, color: '#17a2b8' },
-            { label: 'Список рёбер', onClick: listEdges, color: '#17a2b8' },
-            { label: 'Проверить связность', onClick: checkConnectivity, color: '#17a2b8' }
+            {label: 'Список вершин', onClick: listVertices, color: '#17a2b8'},
+            {label: 'Список рёбер', onClick: listEdges, color: '#17a2b8'},
+            {label: 'Проверить связность', onClick: checkConnectivity, color: '#17a2b8'}
           ].map((button, index) => (
             <button
               key={index}
@@ -693,12 +708,12 @@ const GraphControls: React.FC<GraphControlsProps> = ({
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.target.style.opacity = '0.9';
-                e.target.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.opacity = '0.9';
+                e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.opacity = '1';
-                e.target.style.transform = 'translateY(0)';
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               {button.label}
@@ -730,7 +745,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               </svg>
               Список вершин ({verticesList.vertices.length})
             </h5>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
               {verticesList.vertices.map(vertexId => (
                 <span
                   key={vertexId}
@@ -773,7 +788,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               </svg>
               Список рёбер ({edgesList.edges.length})
             </h5>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
               {edgesList.edges.map((edge, index) => (
                 <span
                   key={index}
@@ -795,14 +810,14 @@ const GraphControls: React.FC<GraphControlsProps> = ({
       </div>
 
       {/* Алгоритмы */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
           fontSize: '16px',
           fontWeight: '600'
         }}>Кратчайший путь (Беллман-Форд)</h4>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+        <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
           <input
             type="number"
             placeholder="Начальная вершина"
@@ -816,14 +831,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <input
             type="number"
@@ -838,14 +847,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <button
             onClick={findShortestPath}
@@ -861,28 +864,22 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#0056b3';
-              e.target.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#007bff';
-              e.target.style.transform = 'translateY(0)';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             Найти путь
           </button>
         </div>
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
           fontSize: '16px',
           fontWeight: '600'
         }}>Расстояния до всех вершин</h4>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+        <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
           <input
             type="number"
             placeholder="Начальная вершина"
@@ -896,14 +893,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#007bff';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e1e5e9';
-              e.target.style.boxShadow = 'none';
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
           <button
             onClick={findDistances}
@@ -919,21 +910,15 @@ const GraphControls: React.FC<GraphControlsProps> = ({
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap'
             }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#0056b3';
-              e.target.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#007bff';
-              e.target.style.transform = 'translateY(0)';
-            }}
+            onMouseEnter={handleButtonMouseEnter}
+            onMouseLeave={handleButtonMouseLeave}
           >
             Найти расстояния
           </button>
         </div>
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{marginBottom: '24px'}}>
         <h4 style={{
           marginBottom: '12px',
           color: '#333',
@@ -953,14 +938,8 @@ const GraphControls: React.FC<GraphControlsProps> = ({
             cursor: 'pointer',
             transition: 'all 0.2s ease'
           }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0056b3';
-            e.target.style.transform = 'translateY(-1px)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#007bff';
-            e.target.style.transform = 'translateY(0)';
-          }}
+          onMouseEnter={handleButtonMouseEnter}
+          onMouseLeave={handleButtonMouseLeave}
         >
           Найти MST
         </button>
@@ -987,7 +966,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
           backgroundColor: '#f8f9fa',
           borderRadius: '8px'
         }}>
-          {graphData.vertices.map(vertex => (
+          {graphData.vertices.map((vertex: Vertex) => (
             <div key={vertex.id} style={{
               padding: '6px 12px',
               backgroundColor: '#007bff',
@@ -1018,10 +997,10 @@ const GraphControls: React.FC<GraphControlsProps> = ({
                   transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
                 }}
               >
                 ×
@@ -1048,7 +1027,7 @@ const GraphControls: React.FC<GraphControlsProps> = ({
           backgroundColor: '#f8f9fa',
           borderRadius: '8px'
         }}>
-          {graphData.edges.map((edge, index) => (
+          {graphData.edges.map((edge: Edge, index: number) => (
             <div key={index} style={{
               padding: '6px 12px',
               backgroundColor: '#28a745',
@@ -1079,10 +1058,10 @@ const GraphControls: React.FC<GraphControlsProps> = ({
                   transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
                 }}
               >
                 ×

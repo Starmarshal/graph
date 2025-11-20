@@ -1,7 +1,15 @@
 {
-  "name": "graph-visualizer",
+  "name": "graph",
   "version": "1.0.0",
   "private": true,
+  "description": "App for graph visualisation",
+  "keywords": [
+    "Graph"
+  ],
+  "license": "ISC",
+  "author": "Yurevich VD",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
