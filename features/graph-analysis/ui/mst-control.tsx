@@ -4,7 +4,7 @@ interface MSTControlProps {
   onFindMST: () => void;
 }
 
-export const MSTControl: React.FC<MSTControlProps> = ({ onFindMST }) => {
+export const MSTControl: React.FC<MSTControlProps> = ({onFindMST}) => {
   const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.currentTarget.style.backgroundColor = '#0056b3';
     e.currentTarget.style.transform = 'translateY(-1px)';
@@ -16,7 +16,7 @@ export const MSTControl: React.FC<MSTControlProps> = ({ onFindMST }) => {
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',

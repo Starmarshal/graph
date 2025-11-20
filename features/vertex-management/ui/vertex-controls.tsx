@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Vertex } from '@/shared/types/graph.interface';
+import React, {useState} from 'react';
+import {Vertex} from '@/shared/types/graph.interface';
 
 interface VertexControlsProps {
   vertices: Vertex[];
@@ -53,7 +53,7 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',
@@ -63,7 +63,7 @@ export const VertexControls: React.FC<VertexControlsProps> = ({
         Управление вершинами
       </h4>
 
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '16px' }}>
+      <div style={{display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '16px'}}>
         <input
           type="number"
           placeholder="ID вершины"

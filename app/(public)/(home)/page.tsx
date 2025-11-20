@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { GraphVisualizerWidget } from '@/widgets/graph-visualizer/ui/graph-visualizer';
-import { GraphControlsWidget } from '@/widgets/graph-controls/ui/graph-controls';
-import { AnalysisResultsWidget } from '@/widgets/analysis-results/ui/analysis-results';
-import { useGraph } from '@/entities/graph/model/use-graph';
+import {GraphVisualizerWidget} from '@/widgets/graph-visualizer/ui/graph-visualizer';
+import {GraphControlsWidget} from '@/widgets/graph-controls/ui/graph-controls';
+import {AnalysisResultsWidget} from '@/widgets/analysis-results/ui/analysis-results';
+import {useGraph} from '@/entities/graph/model/use-graph';
 
 const Home: React.FC = () => {
   const {
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
           <button
             onClick={toggleGraphType}
             style={{

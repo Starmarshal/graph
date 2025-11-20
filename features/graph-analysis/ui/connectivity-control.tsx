@@ -20,7 +20,7 @@ export const ConnectivityControl: React.FC<ConnectivityControlProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',

@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { GraphData, GraphType } from '@/shared/types/graph.interface';
-import { Graph } from '@/entities/graph/model/graph';
+import React, {useCallback} from 'react';
+import {GraphData, GraphType} from '@/shared/types/graph.interface';
+import {Graph} from '@/entities/graph/model/graph';
 
 interface GraphImportExportProps {
   graphData: GraphData;
@@ -19,7 +19,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
     const edges: any[] = [];
 
     if (lines.length === 0) {
-      return { vertices, edges, type: graphType };
+      return {vertices, edges, type: graphType};
     }
 
     if (lines[0].includes(':')) {
@@ -30,7 +30,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
       parseAdjacencyMatrix(lines, vertices, edges, graphType);
     }
 
-    return { vertices, edges, type: graphType };
+    return {vertices, edges, type: graphType};
   }, []);
 
   const parseAdjacencyMatrix = (lines: string[], vertices: any[], edges: any[], graphType: GraphType): void => {
@@ -53,7 +53,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
         const toVertex = j + 1;
 
         if (weight !== 0 && fromVertex !== toVertex) {
-          edges.push({ from: fromVertex, to: toVertex, weight });
+          edges.push({from: fromVertex, to: toVertex, weight});
         }
       }
     }
@@ -75,7 +75,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
           const weight = neighborParts[1] || 1;
           if (toVertex && !isNaN(toVertex)) {
             vertexSet.add(toVertex);
-            edges.push({ from: fromVertex, to: toVertex, weight: isNaN(weight) ? 1 : weight });
+            edges.push({from: fromVertex, to: toVertex, weight: isNaN(weight) ? 1 : weight});
           }
         });
       }
@@ -103,7 +103,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
         if (!isNaN(fromVertex) && !isNaN(toVertex) && !isNaN(weight)) {
           vertexSet.add(fromVertex);
           vertexSet.add(toVertex);
-          edges.push({ from: fromVertex, to: toVertex, weight });
+          edges.push({from: fromVertex, to: toVertex, weight});
         }
       } else if (parts.length === 2) {
         const fromVertex = parseInt(parts[0]);
@@ -113,7 +113,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
         if (!isNaN(fromVertex) && !isNaN(toVertex)) {
           vertexSet.add(fromVertex);
           vertexSet.add(toVertex);
-          edges.push({ from: fromVertex, to: toVertex, weight });
+          edges.push({from: fromVertex, to: toVertex, weight});
         }
       }
     });
@@ -167,7 +167,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',
@@ -197,7 +197,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
           type="file"
           accept=".txt"
           onChange={loadGraphFromFile}
-          style={{ display: 'none' }}
+          style={{display: 'none'}}
         />
 
         <svg
@@ -206,7 +206,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          style={{ color: '#007bff' }}
+          style={{color: '#007bff'}}
           strokeWidth="2"
         >
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>

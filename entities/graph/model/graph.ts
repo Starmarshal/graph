@@ -105,14 +105,14 @@ export class Graph {
             const key = [Math.min(from, to), Math.max(from, to)].join('-');
             if (!edgesSet.has(key)) {
               edgesSet.add(key);
-              edges.push({ from, to, weight });
+              edges.push({from, to, weight});
             }
           }
         }
       } else {
         for (const [from, neighbors] of this.adjList) {
           for (const [to, weight] of neighbors) {
-            edges.push({ from, to, weight });
+            edges.push({from, to, weight});
           }
         }
       }
@@ -126,7 +126,7 @@ export class Graph {
 
   isConnected(): ConnectivityResult {
     if (this.vertices.size === 0) {
-      return { isConnected: true, components: [] };
+      return {isConnected: true, components: []};
     }
 
     const visited = new Set<number>();
@@ -248,19 +248,19 @@ export class Graph {
       }
     }
 
-    return { distances, predecessors };
+    return {distances, predecessors};
   }
 
   shortestPath(start: number, end: number): ShortestPathResult {
     if (!this.vertices.has(start) || !this.vertices.has(end)) {
-      return { path: [], distance: Infinity };
+      return {path: [], distance: Infinity};
     }
 
     try {
-      const { distances, predecessors } = this.bellmanFord(start);
+      const {distances, predecessors} = this.bellmanFord(start);
 
       if (distances.get(end) === Infinity) {
-        return { path: [], distance: Infinity };
+        return {path: [], distance: Infinity};
       }
 
       const path: number[] = [];
@@ -271,10 +271,10 @@ export class Graph {
         current = predecessors.get(current)!;
       }
 
-      return { path, distance: distances.get(end)! };
+      return {path, distance: distances.get(end)!};
     } catch (error) {
       console.error(`Ошибка при поиске пути: ${error}`);
-      return { path: [], distance: Infinity };
+      return {path: [], distance: Infinity};
     }
   }
 
@@ -284,25 +284,25 @@ export class Graph {
       for (const vertex of this.vertices) {
         emptyDistances.set(vertex, Infinity);
       }
-      return { distances: emptyDistances, fromVertex: start };
+      return {distances: emptyDistances, fromVertex: start};
     }
 
     try {
-      const { distances } = this.bellmanFord(start);
-      return { distances, fromVertex: start };
+      const {distances} = this.bellmanFord(start);
+      return {distances, fromVertex: start};
     } catch (error) {
       console.error(`Ошибка при вычислении расстояний: ${error}`);
       const emptyDistances = new Map<number, number>();
       for (const vertex of this.vertices) {
         emptyDistances.set(vertex, Infinity);
       }
-      return { distances: emptyDistances, fromVertex: start };
+      return {distances: emptyDistances, fromVertex: start};
     }
   }
 
   kruskalMST(): MSTResult {
     if (this.vertices.size === 0) {
-      return { edges: [], totalWeight: 0 };
+      return {edges: [], totalWeight: 0};
     }
 
     const edges: [number, number, number][] = [];
@@ -373,7 +373,7 @@ export class Graph {
 
     for (const [u, v, weight] of edges) {
       if (union(u, v)) {
-        mstEdges.push({ from: u, to: v, weight });
+        mstEdges.push({from: u, to: v, weight});
         totalWeight += weight;
         if (mstEdges.length === this.vertices.size - 1) {
           break;
@@ -381,7 +381,7 @@ export class Graph {
       }
     }
 
-    return { edges: mstEdges, totalWeight };
+    return {edges: mstEdges, totalWeight};
   }
 
   exportToFile(format: 'matrix' | 'list' = 'matrix'): string {

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 import {
   GraphData,
   Vertex,
@@ -10,22 +10,22 @@ import {
   VerticesListResult,
   EdgesListResult
 } from '@/shared/types/graph.interface';
-import { Graph } from './graph';
+import {Graph} from './graph';
 
 const initialGraphData: GraphData = {
   vertices: [
-    { id: 1, x: 200, y: 200 },
-    { id: 2, x: 400, y: 200 },
-    { id: 3, x: 300, y: 350 },
-    { id: 4, x: 200, y: 350 },
-    { id: 5, x: 400, y: 350 }
+    {id: 1, x: 200, y: 200},
+    {id: 2, x: 400, y: 200},
+    {id: 3, x: 300, y: 350},
+    {id: 4, x: 200, y: 350},
+    {id: 5, x: 400, y: 350}
   ],
   edges: [
-    { from: 1, to: 2, weight: 2 },
-    { from: 1, to: 4, weight: 5 },
-    { from: 2, to: 3, weight: 3 },
-    { from: 3, to: 4, weight: 4 },
-    { from: 4, to: 5, weight: 5 }
+    {from: 1, to: 2, weight: 2},
+    {from: 1, to: 4, weight: 5},
+    {from: 2, to: 3, weight: 3},
+    {from: 3, to: 4, weight: 4},
+    {from: 4, to: 5, weight: 5}
   ],
   type: 'undirected'
 };
@@ -58,7 +58,7 @@ export const useGraph = () => {
     setGraphData(prev => ({
       ...prev,
       vertices: prev.vertices.map(v =>
-        v.id === vertexId ? { ...v, x, y } : v
+        v.id === vertexId ? {...v, x, y} : v
       )
     }));
   }, []);
@@ -98,7 +98,7 @@ export const useGraph = () => {
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Edge, Vertex } from '@/shared/types/graph.interface';
+import React, {useState} from 'react';
+import {Edge, Vertex} from '@/shared/types/graph.interface';
 
 interface EdgeControlsProps {
   edges: Edge[];
@@ -65,7 +65,7 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',
@@ -75,7 +75,7 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
         Управление рёбрами
       </h4>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+      <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
         <input
           type="number"
           placeholder="Из вершины"

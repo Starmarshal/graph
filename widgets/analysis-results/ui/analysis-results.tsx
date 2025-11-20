@@ -28,7 +28,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                                                                               graphType
                                                                             }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
       {verticesList && (
         <div style={{
           padding: '20px',
@@ -55,7 +55,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
             }}></div>
             Список вершин
           </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
             {verticesList.vertices.map(vertexId => (
               <div
                 key={vertexId}
@@ -68,10 +68,10 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                   minWidth: '50px'
                 }}
               >
-                <div style={{ fontWeight: '600', color: '#2b6cb0', fontSize: '14px' }}>
+                <div style={{fontWeight: '600', color: '#2b6cb0', fontSize: '14px'}}>
                   Вершина
                 </div>
-                <div style={{ fontSize: '16px', fontWeight: '700', color: '#2c5282' }}>
+                <div style={{fontSize: '16px', fontWeight: '700', color: '#2c5282'}}>
                   {vertexId}
                 </div>
               </div>
@@ -106,7 +106,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
             }}></div>
             Список рёбер
           </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
             {edgesList.edges.map((edge, index) => (
               <div
                 key={index}
@@ -118,10 +118,10 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                   textAlign: 'center'
                 }}
               >
-                <div style={{ fontWeight: '600', color: '#276749', fontSize: '14px' }}>
+                <div style={{fontWeight: '600', color: '#276749', fontSize: '14px'}}>
                   {edge.from} → {edge.to}
                 </div>
-                <div style={{ fontSize: '12px', color: '#38a169', marginTop: '4px' }}>
+                <div style={{fontSize: '12px', color: '#38a169', marginTop: '4px'}}>
                   вес: {edge.weight}
                 </div>
               </div>
@@ -156,8 +156,8 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
             }}></div>
             Кратчайший путь
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '12px', alignItems: 'center' }}>
-            <strong style={{ color: '#4a5568' }}>Путь:</strong>
+          <div style={{display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '12px', alignItems: 'center'}}>
+            <strong style={{color: '#4a5568'}}>Путь:</strong>
             <div style={{
               padding: '8px 12px',
               backgroundColor: '#fff5f5',
@@ -169,7 +169,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
               {shortestPath.path.join(' → ')}
             </div>
 
-            <strong style={{ color: '#4a5568' }}>Длина:</strong>
+            <strong style={{color: '#4a5568'}}>Длина:</strong>
             <div style={{
               padding: '8px 12px',
               backgroundColor: '#fff5f5',
@@ -193,10 +193,10 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
           border: '2px solid #fed7d7',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
-          <h3 style={{ margin: '0 0 12px 0', color: '#c53030', fontSize: '18px', fontWeight: '600' }}>
+          <h3 style={{margin: '0 0 12px 0', color: '#c53030', fontSize: '18px', fontWeight: '600'}}>
             Кратчайший путь не найден
           </h3>
-          <p style={{ color: '#718096', margin: 0 }}>Между выбранными вершинами нет пути</p>
+          <p style={{color: '#718096', margin: 0}}>Между выбранными вершинами нет пути</p>
         </div>
       )}
 
@@ -226,8 +226,8 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
             }}></div>
             Минимальное остовное дерево
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '12px', alignItems: 'center' }}>
-            <strong style={{ color: '#4a5568' }}>Общий вес:</strong>
+          <div style={{display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '12px', alignItems: 'center'}}>
+            <strong style={{color: '#4a5568'}}>Общий вес:</strong>
             <div style={{
               padding: '8px 12px',
               backgroundColor: '#f0fff4',
@@ -240,8 +240,8 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
               {mst.totalWeight}
             </div>
 
-            <strong style={{ color: '#4a5568', alignSelf: 'start' }}>Рёбра:</strong>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            <strong style={{color: '#4a5568', alignSelf: 'start'}}>Рёбра:</strong>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
               {mst.edges.map((edge, index) => (
                 <span
                   key={index}
@@ -305,7 +305,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                   border: '1px solid #fed7aa'
                 }}
               >
-                <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '6px', color: '#744210' }}>
+                <div style={{fontWeight: '600', fontSize: '14px', marginBottom: '6px', color: '#744210'}}>
                   Вершина {vertex}
                 </div>
                 <div style={{
@@ -316,7 +316,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                   {distance === Infinity ? '∞' : distance}
                 </div>
                 {distance === Infinity && (
-                  <div style={{ fontSize: '11px', color: '#a0aec0', marginTop: '4px' }}>
+                  <div style={{fontSize: '11px', color: '#a0aec0', marginTop: '4px'}}>
                     недостижима
                   </div>
                 )}
@@ -388,10 +388,10 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
 
           {connectivity.components.length > 0 && (
             <div>
-              <h4 style={{ margin: '0 0 12px 0', color: '#553c9a', fontSize: '16px', fontWeight: '600' }}>
+              <h4 style={{margin: '0 0 12px 0', color: '#553c9a', fontSize: '16px', fontWeight: '600'}}>
                 Компоненты {graphType === 'undirected' ? 'связности' : 'слабой связности'}:
               </h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px'}}>
                 {connectivity.components.map((component, index) => (
                   <div
                     key={index}
@@ -411,7 +411,7 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                     }}>
                       Компонента {index + 1}
                     </div>
-                    <div style={{ fontWeight: '600', color: '#553c9a', fontSize: '14px' }}>
+                    <div style={{fontWeight: '600', color: '#553c9a', fontSize: '14px'}}>
                       {component.join(', ')}
                     </div>
                     <div style={{

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Vertex } from '@/shared/types/graph.interface';
+import React, {useState} from 'react';
+import {Vertex} from '@/shared/types/graph.interface';
 
 interface DistancesControlProps {
   vertices: Vertex[];
@@ -49,7 +49,7 @@ export const DistancesControl: React.FC<DistancesControlProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',
@@ -59,7 +59,7 @@ export const DistancesControl: React.FC<DistancesControlProps> = ({
         Расстояния до всех вершин
       </h4>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+      <div style={{display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap'}}>
         <input
           type="number"
           placeholder="Начальная вершина"

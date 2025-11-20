@@ -1,4 +1,4 @@
-import { GraphData, Vertex, Edge, GraphType } from '../types/graph.interface';
+import {GraphData, Vertex, Edge, GraphType} from '../types/graph.interface';
 
 export const createEmptyGraph = (type: GraphType = 'undirected'): GraphData => ({
   vertices: [],
@@ -28,17 +28,17 @@ export const generateRandomGraph = (
     for (let j = i + 1; j <= vertexCount; j++) {
       if (Math.random() < edgeProbability) {
         const weight = Math.floor(Math.random() * 10) + 1;
-        edges.push({ from: i, to: j, weight });
+        edges.push({from: i, to: j, weight});
 
         // Для неориентированного графа добавляем обратное ребро
         if (type === 'undirected') {
-          edges.push({ from: j, to: i, weight });
+          edges.push({from: j, to: i, weight});
         }
       }
     }
   }
 
-  return { vertices, edges, type };
+  return {vertices, edges, type};
 };
 
 export const validateGraph = (graphData: GraphData): string[] => {

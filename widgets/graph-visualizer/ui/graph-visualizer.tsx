@@ -1,6 +1,6 @@
 import React from 'react';
-import { GraphCanvas } from '@/entities/graph/ui/graph-canvas';
-import { GraphData, ShortestPathResult, MSTResult } from '@/shared/types/graph.interface';
+import {GraphCanvas} from '@/entities/graph/ui/graph-canvas';
+import {GraphData, ShortestPathResult, MSTResult} from '@/shared/types/graph.interface';
 
 interface GraphVisualizerWidgetProps {
   graphData: GraphData;
@@ -17,7 +17,6 @@ export const GraphVisualizerWidget: React.FC<GraphVisualizerWidgetProps> = (prop
       backgroundColor: 'white',
       borderRadius: '12px',
       padding: '0',
-      maxHeight: '132vh',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
       marginBottom: '24px',
       border: '1px solid #e2e8f0',

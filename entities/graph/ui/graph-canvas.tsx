@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { GraphData, Edge, Vertex, ShortestPathResult, MSTResult } from '@/shared/types/graph.interface';
+import React, {useRef, useEffect, useState} from 'react';
+import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/graph.interface';
 
 interface GraphCanvasProps {
   graphData: GraphData;
@@ -21,7 +21,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState<number | null>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const [canvasSize, setCanvasSize] = useState({width: 800, height: 600});
 
   const updateCanvasSize = () => {
     if (containerRef.current) {
@@ -29,7 +29,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       let newWidth = Math.min(containerWidth - 40, 1200);
       newWidth = Math.max(newWidth, 400);
       const newHeight = Math.round(newWidth * 0.75);
-      setCanvasSize({ width: newWidth, height: newHeight });
+      setCanvasSize({width: newWidth, height: newHeight});
     }
   };
 

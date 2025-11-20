@@ -1,5 +1,5 @@
 import React from 'react';
-import { VerticesListResult, EdgesListResult } from '@/shared/types/graph.interface';
+import {VerticesListResult, EdgesListResult} from '@/shared/types/graph.interface';
 
 interface GraphInfoControlProps {
   onListVertices: () => void;
@@ -25,7 +25,7 @@ export const GraphInfoControl: React.FC<GraphInfoControlProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{marginBottom: '24px'}}>
       <h4 style={{
         marginBottom: '12px',
         color: '#333',
@@ -35,7 +35,7 @@ export const GraphInfoControl: React.FC<GraphInfoControlProps> = ({
         Информация о графе
       </h4>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+      <div style={{display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap'}}>
         <button
           onClick={onListVertices}
           style={{
@@ -100,7 +100,7 @@ export const GraphInfoControl: React.FC<GraphInfoControlProps> = ({
             </svg>
             Список вершин ({verticesList.vertices.length})
           </h5>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
             {verticesList.vertices.map(vertexId => (
               <span
                 key={vertexId}
@@ -143,7 +143,7 @@ export const GraphInfoControl: React.FC<GraphInfoControlProps> = ({
             </svg>
             Список рёбер ({edgesList.edges.length})
           </h5>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
             {edgesList.edges.map((edge, index) => (
               <span
                 key={index}

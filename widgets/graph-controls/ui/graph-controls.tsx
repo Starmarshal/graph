@@ -1,13 +1,13 @@
 import React from 'react';
-import { GraphData, Vertex, Edge } from '@/shared/types/graph.interface';
-import { GraphImportExport } from '@/features/graph-management/ui/graph-import-export';
-import { VertexControls } from '@/features/vertex-management/ui/vertex-controls';
-import { EdgeControls } from '@/features/edge-management/ui/edge-controls';
-import { ShortestPathControl } from '@/features/graph-analysis/ui/shortest-path-control';
-import { DistancesControl } from '@/features/graph-analysis/ui/distances-control';
-import { MSTControl } from '@/features/graph-analysis/ui/mst-control';
-import { ConnectivityControl } from '@/features/graph-analysis/ui/connectivity-control';
-import { GraphInfoControl } from '@/features/graph-analysis/ui/graph-info-control';
+import {GraphData, Vertex, Edge} from '@/shared/types/graph.interface';
+import {GraphImportExport} from '@/features/graph-management/ui/graph-import-export';
+import {VertexControls} from '@/features/vertex-management/ui/vertex-controls';
+import {EdgeControls} from '@/features/edge-management/ui/edge-controls';
+import {ShortestPathControl} from '@/features/graph-analysis/ui/shortest-path-control';
+import {DistancesControl} from '@/features/graph-analysis/ui/distances-control';
+import {MSTControl} from '@/features/graph-analysis/ui/mst-control';
+import {ConnectivityControl} from '@/features/graph-analysis/ui/connectivity-control';
+import {GraphInfoControl} from '@/features/graph-analysis/ui/graph-info-control';
 
 interface GraphControlsWidgetProps {
   graphData: GraphData;
@@ -34,7 +34,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
                                                                           onVerticesList,
                                                                           onEdgesList
                                                                         }) => {
-  const { Graph } = require('@/entities/graph/model/graph');
+  const {Graph} = require('@/entities/graph/model/graph');
 
   const handleAddVertex = (id: number): void => {
     const newVertex: Vertex = {
@@ -62,7 +62,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
   };
 
   const handleAddEdge = (from: number, to: number, weight: number): void => {
-    const newEdge: Edge = { from, to, weight };
+    const newEdge: Edge = {from, to, weight};
     const edgeExists = graphData.edges.some((e: Edge) =>
       (e.from === from && e.to === to) || (graphData.type === 'undirected' && e.from === to && e.to === from)
     );
@@ -143,14 +143,14 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const vertices = graph.getVertices();
-    onVerticesList({ vertices });
+    onVerticesList({vertices});
   };
 
   const handleListEdges = (): void => {
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const edges = graph.listOfEdges();
-    onEdgesList({ edges });
+    onEdgesList({edges});
   };
 
   const handleToggleGraphType = (): void => {
@@ -166,7 +166,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -240,7 +240,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
         onFindDistances={handleFindDistances}
       />
 
-      <MSTControl onFindMST={handleFindMST} />
+      <MSTControl onFindMST={handleFindMST}/>
 
       <ConnectivityControl
         graphType={graphData.type}
