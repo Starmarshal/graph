@@ -186,7 +186,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
       padding: '24px',
       border: '1px solid #e1e5e9',
       borderRadius: '12px',
-      maxHeight: '132vh',
+      maxHeight: '80vh',
       overflowY: 'auto',
       backgroundColor: '#ffffff',
       boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
