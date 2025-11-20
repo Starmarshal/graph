@@ -6,7 +6,7 @@ import {
   ConnectivityResult,
   VerticesListResult,
   EdgesListResult
-} from '@/shared/types/graph.interface';
+} from '@/shared/types/grpah.interface';
 
 interface AnalysisResultsWidgetProps {
   shortestPath: ShortestPathResult | null;

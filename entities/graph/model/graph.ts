@@ -6,7 +6,7 @@ import {
   MSTResult,
   DistanceResult,
   ConnectivityResult
-} from '@/shared/types/graph.interface';
+} from '@/shared/types/grpah.interface';
 
 export class Graph {
   private adjList: Map<number, Map<number, number>>;

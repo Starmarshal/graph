@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
-import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/graph.interface';
+import {GraphData, Edge, Vertex, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface'
 
 interface GraphCanvasProps {
   graphData: GraphData;

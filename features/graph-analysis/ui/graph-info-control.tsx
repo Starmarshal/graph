@@ -1,5 +1,5 @@
 import React from 'react';
-import {VerticesListResult, EdgesListResult} from '@/shared/types/graph.interface';
+import {VerticesListResult, EdgesListResult} from '@/shared/types/grpah.interface';
 
 interface GraphInfoControlProps {
   onListVertices: () => void;

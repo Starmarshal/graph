@@ -1,5 +1,5 @@
 import React from 'react';
-import {GraphData, Vertex, Edge} from '@/shared/types/graph.interface';
+import {GraphData, Vertex, Edge} from '@/shared/types/grpah.interface';
 import {GraphImportExport} from '@/features/graph-management/ui/graph-import-export';
 import {VertexControls} from '@/features/vertex-management/ui/vertex-controls';
 import {EdgeControls} from '@/features/edge-management/ui/edge-controls';

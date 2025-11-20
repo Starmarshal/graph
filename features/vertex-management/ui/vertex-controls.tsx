@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Vertex} from '@/shared/types/graph.interface';
+import {Vertex} from '@/shared/types/grpah.interface'
 
 interface VertexControlsProps {
   vertices: Vertex[];

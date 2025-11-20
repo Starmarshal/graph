@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Edge, Vertex} from '@/shared/types/graph.interface';
+import {Edge, Vertex} from '@/shared/types/grpah.interface';
 
 interface EdgeControlsProps {
   edges: Edge[];

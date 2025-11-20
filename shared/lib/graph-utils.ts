@@ -1,4 +1,4 @@
-import {GraphData, Vertex, Edge, GraphType} from '../types/graph.interface';
+import {GraphData, Vertex, Edge, GraphType} from '@/shared/types/grpah.interface';
 
 export const createEmptyGraph = (type: GraphType = 'undirected'): GraphData => ({
   vertices: [],

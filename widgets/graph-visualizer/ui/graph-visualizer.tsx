@@ -1,6 +1,6 @@
 import React from 'react';
 import {GraphCanvas} from '@/entities/graph/ui/graph-canvas';
-import {GraphData, ShortestPathResult, MSTResult} from '@/shared/types/graph.interface';
+import {GraphData, ShortestPathResult, MSTResult} from '@/shared/types/grpah.interface';
 
 interface GraphVisualizerWidgetProps {
   graphData: GraphData;

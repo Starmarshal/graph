@@ -9,7 +9,7 @@ import {
   ConnectivityResult,
   VerticesListResult,
   EdgesListResult
-} from '@/shared/types/graph.interface';
+} from '@/shared/types/grpah.interface';
 import {Graph} from './graph';
 
 const initialGraphData: GraphData = {
