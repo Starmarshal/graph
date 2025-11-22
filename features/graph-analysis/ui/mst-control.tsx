@@ -1,4 +1,6 @@
 import React from 'react';
+import Button from '@/shared/ui/Button';
+import StatusBanner from '@/shared/ui/StatusBanner';
 
 interface MSTControlProps {
   onFindMST: () => void;
@@ -16,48 +18,25 @@ export const MSTControl: React.FC<MSTControlProps> = ({onFindMST}) => {
   };
 
   return (
-    <div style={{marginBottom: '24px'}}>
-      <h4 style={{
-        marginBottom: '12px',
-        color: '#333',
-        fontSize: '16px',
-        fontWeight: '600'
-      }}>
+    <div className="mb-6">
+      <h4 className="mb-3 text-gray-800 text-base font-semibold">
         Минимальное остовное дерево (Краскал)
       </h4>
 
-      <button
+      <Button
         onClick={onFindMST}
-        style={{
-          width: '100%',
-          padding: '10px 20px',
-          border: 'none',
-          borderRadius: '6px',
-          backgroundColor: '#007bff',
-          color: 'white',
-          fontWeight: '600',
-          fontSize: '14px',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease'
-        }}
+        className="w-full bg-blue-500 hover:bg-blue-600"
         onMouseEnter={handleButtonMouseEnter}
         onMouseLeave={handleButtonMouseLeave}
       >
         Найти MST
-      </button>
+      </Button>
 
-      <div style={{
-        marginTop: '8px',
-        padding: '8px 12px',
-        backgroundColor: '#f0f9f0',
-        borderRadius: '6px',
-        border: '1px solid #c6f6d5',
-        fontSize: '12px',
-        color: '#276749',
-        textAlign: 'center'
-      }}>
+      <StatusBanner
+        className="border-green-200 bg-green-50 text-green-800"
+      >
         Алгоритм Краскала
-      </div>
+      </StatusBanner>
     </div>
   );
 };

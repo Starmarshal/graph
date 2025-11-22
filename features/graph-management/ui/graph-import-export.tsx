@@ -1,5 +1,7 @@
 import React, {useCallback} from 'react';
 import {GraphData, GraphType} from '@/shared/types/grpah.interface';
+import Button from '@/shared/ui/Button';
+import Input from '@/shared/ui/Input';
 
 interface GraphImportExportProps {
   graphData: GraphData;
@@ -145,58 +147,26 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
     event.target.value = '';
   };
 
-  const handleLabelMouseEnter = (e: React.MouseEvent<HTMLLabelElement>): void => {
-    e.currentTarget.style.borderColor = '#007bff';
-    e.currentTarget.style.backgroundColor = '#f0f8ff';
-    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-  };
-
-  const handleLabelMouseLeave = (e: React.MouseEvent<HTMLLabelElement>): void => {
-    e.currentTarget.style.borderColor = '#e1e5e9';
-    e.currentTarget.style.backgroundColor = '#fafbfc';
-    e.currentTarget.style.boxShadow = 'none';
-  };
-
-  const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#38a169';
-  };
-
-  const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.currentTarget.style.backgroundColor = '#48bb78';
-  };
-
   return (
-    <div style={{marginBottom: '24px'}}>
-      <h4 style={{
-        marginBottom: '12px',
-        color: '#333',
-        fontSize: '16px',
-        fontWeight: '600'
-      }}>
+    <div className="mb-6">
+      <h4 className="mb-3 text-gray-800 text-base font-semibold">
         Загрузить из файла
       </h4>
 
       <label
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          padding: '16px',
-          border: '2px dashed #e1e5e9',
-          borderRadius: '8px',
-          backgroundColor: '#fafbfc',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          marginBottom: '8px'
-        }}
-        onMouseEnter={handleLabelMouseEnter}
-        onMouseLeave={handleLabelMouseLeave}
+        className="
+          flex items-center gap-3 p-4 border-2 border-dashed
+          border-gray-200 rounded-lg bg-gray-50 cursor-pointer
+          transition-all duration-200 ease-in-out mb-2
+          hover:border-blue-500 hover:bg-blue-50 hover:shadow-sm
+          focus-within:border-blue-500 focus-within:bg-blue-50 focus-within:ring-2 focus-within:ring-blue-200
+        "
       >
-        <input
+        <Input
           type="file"
           accept=".txt"
           onChange={loadGraphFromFile}
-          style={{display: 'none'}}
+          className="hidden"
         />
 
         <svg
@@ -205,7 +175,7 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          style={{color: '#007bff'}}
+          className="text-blue-600"
           strokeWidth="2"
         >
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -215,61 +185,28 @@ export const GraphImportExport: React.FC<GraphImportExportProps> = ({
           <polyline points="10,9 9,9 8,9"/>
         </svg>
 
-        <span style={{
-          color: '#333',
-          fontWeight: '500'
-        }}>
+        <span className="text-gray-800 font-medium">
           Выберите файл
         </span>
 
-        <span style={{
-          marginLeft: 'auto',
-          color: '#666',
-          fontSize: '14px',
-          backgroundColor: '#f1f3f4',
-          padding: '4px 8px',
-          borderRadius: '4px'
-        }}>
+        <span className="ml-auto text-gray-500 text-sm bg-gray-100 px-2 py-1 rounded">
           .txt
         </span>
       </label>
 
-      <small style={{
-        color: '#666',
-        fontSize: '12px',
-        display: 'block',
-        textAlign: 'center'
-      }}>
+      <small className="text-center block text-sm text-gray-500">
         Поддерживаются форматы: матрица смежности, списки смежности, список рёбер
       </small>
 
-      <button
+      <Button
         onClick={onExport}
-        style={{
-          width: '100%',
-          padding: '10px 20px',
-          border: 'none',
-          borderRadius: '8px',
-          backgroundColor: '#48bb78',
-          color: 'white',
-          cursor: 'pointer',
-          fontWeight: '600',
-          fontSize: '14px',
-          transition: 'all 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          marginTop: '12px'
-        }}
-        onMouseEnter={handleButtonMouseEnter}
-        onMouseLeave={handleButtonMouseLeave}
+        className="w-full bg-green-600 hover:bg-green-700 gap-[6px] text-[14px] font-medium mt-[12px] !rounded-[10px] hover:!translate-y-0"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
         </svg>
         Экспорт графа
-      </button>
+      </Button>
     </div>
   );
 };

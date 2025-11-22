@@ -29,77 +29,40 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
                                                                               graphType,
                                                                               isMobile = false
                                                                             }) => {
-  const resultStyle = {
-    padding: isMobile ? '16px' : '20px',
-    backgroundColor: 'white',
-    borderRadius: isMobile ? '8px' : '12px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    marginBottom: isMobile ? '12px' : '16px'
-  };
-
-  const titleStyle = {
-    margin: '0 0 12px 0',
-    fontSize: isMobile ? '16px' : '18px',
-    fontWeight: '600' as const,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  };
-
-  const iconStyle = {
-    width: isMobile ? '16px' : '20px',
-    height: isMobile ? '16px' : '20px',
-    borderRadius: '50%',
-    flexShrink: 0
-  };
-
   return (
-    <div style={{display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px'}}>
+    <div className={`flex flex-col ${isMobile ? 'gap-3' : 'gap-4'}`}>
       {/* Компонент списка вершин */}
       {verticesList && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #bee3f8'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#2b6cb0'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#4299e1'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-blue-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-blue-800' : 'text-lg text-blue-900'}
+          `}>
+            <div className={`rounded-full bg-blue-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Список вершин
           </h3>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: isMobile ? '6px' : '8px'
-          }}>
+          <div className={`flex flex-wrap ${isMobile ? 'gap-1.5' : 'gap-2'}`}>
             {verticesList.vertices.map(vertexId => (
               <div
                 key={vertexId}
-                style={{
-                  padding: isMobile ? '6px 10px' : '8px 12px',
-                  backgroundColor: '#ebf8ff',
-                  borderRadius: '6px',
-                  border: '1px solid #bee3f8',
-                  textAlign: 'center',
-                  minWidth: isMobile ? '40px' : '50px'
-                }}
+                className={`
+                  bg-blue-50 border border-blue-200 rounded text-center
+                  ${isMobile ? 'px-2.5 py-1.5 min-w-[40px]' : 'px-3 py-2 min-w-[50px]'}
+                `}
               >
-                <div style={{
-                  fontWeight: '600',
-                  color: '#2b6cb0',
-                  fontSize: isMobile ? '12px' : '14px'
-                }}>
+                <div className={`
+                  font-semibold text-blue-800
+                  ${isMobile ? 'text-xs' : 'text-sm'}
+                `}>
                   Вершина
                 </div>
-                <div style={{
-                  fontSize: isMobile ? '14px' : '16px',
-                  fontWeight: '700',
-                  color: '#2c5282'
-                }}>
+                <div className={`
+                  font-bold text-blue-900
+                  ${isMobile ? 'text-sm' : 'text-base'}
+                `}>
                   {vertexId}
                 </div>
               </div>
@@ -110,48 +73,36 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
 
       {/* Компонент списка рёбер */}
       {edgesList && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #c6f6d5'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#276749'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#48bb78'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-green-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-green-800' : 'text-lg text-green-900'}
+          `}>
+            <div className={`rounded-full bg-green-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Список рёбер
           </h3>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: isMobile ? '6px' : '8px'
-          }}>
+          <div className={`flex flex-wrap ${isMobile ? 'gap-1.5' : 'gap-2'}`}>
             {edgesList.edges.map((edge, index) => (
               <div
                 key={index}
-                style={{
-                  padding: isMobile ? '8px 12px' : '10px 14px',
-                  backgroundColor: '#f0fff4',
-                  borderRadius: '6px',
-                  border: '1px solid #9ae6b4',
-                  textAlign: 'center'
-                }}
+                className={`
+                  bg-green-50 border border-green-300 rounded text-center
+                  ${isMobile ? 'px-3 py-2' : 'px-3.5 py-2.5'}
+                `}
               >
-                <div style={{
-                  fontWeight: '600',
-                  color: '#276749',
-                  fontSize: isMobile ? '12px' : '14px'
-                }}>
+                <div className={`
+                  font-semibold text-green-800
+                  ${isMobile ? 'text-xs' : 'text-sm'}
+                `}>
                   {edge.from} → {edge.to}
                 </div>
-                <div style={{
-                  fontSize: isMobile ? '11px' : '12px',
-                  color: '#38a169',
-                  marginTop: '2px'
-                }}>
+                <div className={`
+                  text-green-600 mt-0.5
+                  ${isMobile ? 'text-xs' : 'text-sm'}
+                `}>
                   вес: {edge.weight}
                 </div>
               </div>
@@ -161,50 +112,31 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
       )}
 
       {shortestPath && shortestPath.path.length > 0 && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #fed7d7'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#c53030'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#f56565'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-red-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-red-800' : 'text-lg text-red-900'}
+          `}>
+            <div className={`rounded-full bg-red-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Кратчайший путь
           </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr',
-            gap: isMobile ? '8px' : '12px',
-            alignItems: 'center'
-          }}>
-            {!isMobile && <strong style={{color: '#4a5568'}}>Путь:</strong>}
-            <div style={{
-              padding: isMobile ? '6px 10px' : '8px 12px',
-              backgroundColor: '#fff5f5',
-              borderRadius: '6px',
-              fontFamily: 'monospace',
-              fontWeight: '500',
-              color: '#c53030',
-              fontSize: isMobile ? '13px' : 'inherit'
-            }}>
+          <div className={`${isMobile ? 'space-y-2' : 'grid grid-cols-[auto_1fr] gap-3 items-center'}`}>
+            {!isMobile && <strong className="text-gray-700">Путь:</strong>}
+            <div className={`
+              bg-red-50 rounded font-mono font-medium text-red-800
+              ${isMobile ? 'px-2.5 py-1.5 text-sm' : 'px-3 py-2'}
+            `}>
               {isMobile ? 'Путь: ' : ''}{shortestPath.path.join(' → ')}
             </div>
 
-            {!isMobile && <strong style={{color: '#4a5568'}}>Длина:</strong>}
-            <div style={{
-              padding: isMobile ? '6px 10px' : '8px 12px',
-              backgroundColor: '#fff5f5',
-              borderRadius: '6px',
-              fontFamily: 'monospace',
-              fontWeight: '600',
-              color: '#c53030',
-              fontSize: isMobile ? '14px' : '16px',
-              gridColumn: isMobile ? '1' : '2'
-            }}>
+            {!isMobile && <strong className="text-gray-700">Длина:</strong>}
+            <div className={`
+              bg-red-50 rounded font-mono font-semibold text-red-800
+              ${isMobile ? 'px-2.5 py-1.5 text-sm col-span-1' : 'px-3 py-2 text-base col-span-1'}
+            `}>
               {isMobile ? 'Длина: ' : ''}{shortestPath.distance}
             </div>
           </div>
@@ -212,78 +144,52 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
       )}
 
       {shortestPath && shortestPath.path.length === 0 && shortestPath.distance === Infinity && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #fed7d7'
-        }}>
-          <h3 style={{
-            margin: '0 0 8px 0',
-            color: '#c53030',
-            fontSize: isMobile ? '16px' : '18px',
-            fontWeight: '600'
-          }}>
+        <div className={`
+          bg-white border-2 border-red-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            mb-2 font-semibold text-red-800
+            ${isMobile ? 'text-base' : 'text-lg'}
+          `}>
             Кратчайший путь не найден
           </h3>
-          <p style={{color: '#718096', margin: 0, fontSize: isMobile ? '13px' : 'inherit'}}>
+          <p className={`text-gray-600 m-0 ${isMobile ? 'text-sm' : ''}`}>
             Между выбранными вершинами нет пути
           </p>
         </div>
       )}
 
       {mst && mst.edges.length > 0 && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #c6f6d5'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#276749'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#48bb78'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-green-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-green-800' : 'text-lg text-green-900'}
+          `}>
+            <div className={`rounded-full bg-green-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Минимальное остовное дерево
           </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr',
-            gap: isMobile ? '8px' : '12px',
-            alignItems: 'center'
-          }}>
-            {!isMobile && <strong style={{color: '#4a5568'}}>Общий вес:</strong>}
-            <div style={{
-              padding: isMobile ? '6px 10px' : '8px 12px',
-              backgroundColor: '#f0fff4',
-              borderRadius: '6px',
-              fontFamily: 'monospace',
-              fontWeight: '600',
-              color: '#276749',
-              fontSize: isMobile ? '14px' : '16px',
-              gridColumn: isMobile ? '1' : '2'
-            }}>
+          <div className={`${isMobile ? 'space-y-2' : 'grid grid-cols-[auto_1fr] gap-3 items-start'}`}>
+            {!isMobile && <strong className="text-gray-700">Общий вес:</strong>}
+            <div className={`
+              bg-green-50 rounded font-mono font-semibold text-green-800
+              ${isMobile ? 'px-2.5 py-1.5 text-sm col-span-1' : 'px-3 py-2 text-base col-span-1'}
+            `}>
               {isMobile ? 'Общий вес: ' : ''}{mst.totalWeight}
             </div>
 
-            {!isMobile && <strong style={{color: '#4a5568', alignSelf: 'start'}}>Рёбра:</strong>}
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: isMobile ? '4px' : '6px',
-              gridColumn: isMobile ? '1' : '2'
-            }}>
+            {!isMobile && <strong className="text-gray-700 self-start">Рёбра:</strong>}
+            <div className={`flex flex-wrap ${isMobile ? 'gap-1 col-span-1' : 'gap-1.5 col-span-1'}`}>
               {mst.edges.map((edge, index) => (
                 <span
                   key={index}
-                  style={{
-                    padding: isMobile ? '4px 8px' : '6px 10px',
-                    backgroundColor: '#f0fff4',
-                    borderRadius: '12px',
-                    fontSize: isMobile ? '12px' : '13px',
-                    fontWeight: '500',
-                    color: '#276749',
-                    border: '1px solid #9ae6b4'
-                  }}
+                  className={`
+                    bg-green-50 border border-green-300 rounded-full font-medium text-green-800
+                    ${isMobile ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-sm'}
+                  `}
                 >
                   {edge.from}—{edge.to}
                 </span>
@@ -294,57 +200,46 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
       )}
 
       {distances && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #feebc8'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#744210'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#ed8936'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-orange-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-orange-800' : 'text-lg text-orange-900'}
+          `}>
+            <div className={`rounded-full bg-orange-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Расстояния от вершины {distances.fromVertex}
           </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(100px, 1fr))' : 'repeat(auto-fill, minmax(140px, 1fr))',
-            gap: isMobile ? '8px' : '12px'
-          }}>
+          <div className={`
+            grid gap-3
+            ${isMobile ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}
+          `}>
             {Array.from(distances.distances.entries()).map(([vertex, distance]) => (
               <div
                 key={vertex}
-                style={{
-                  padding: isMobile ? '8px' : '12px',
-                  backgroundColor: '#fffaf0',
-                  borderRadius: '6px',
-                  textAlign: 'center',
-                  border: '1px solid #fed7aa'
-                }}
+                className={`
+                  bg-orange-50 border border-orange-200 rounded text-center
+                  ${isMobile ? 'p-2' : 'p-3'}
+                `}
               >
-                <div style={{
-                  fontWeight: '600',
-                  fontSize: isMobile ? '12px' : '14px',
-                  marginBottom: '4px',
-                  color: '#744210'
-                }}>
+                <div className={`
+                  font-semibold mb-1 text-orange-800
+                  ${isMobile ? 'text-xs' : 'text-sm'}
+                `}>
                   Вершина {vertex}
                 </div>
-                <div style={{
-                  fontSize: isMobile ? '16px' : '18px',
-                  fontWeight: '700',
-                  color: distance === Infinity ? '#e53e3e' : '#d69e2e'
-                }}>
+                <div className={`
+                  font-bold ${distance === Infinity ? 'text-red-500' : 'text-orange-600'}
+                  ${isMobile ? 'text-base' : 'text-lg'}
+                `}>
                   {distance === Infinity ? '∞' : distance}
                 </div>
                 {distance === Infinity && (
-                  <div style={{
-                    fontSize: isMobile ? '10px' : '11px',
-                    color: '#a0aec0',
-                    marginTop: '2px'
-                  }}>
+                  <div className={`
+                    text-gray-500 mt-0.5
+                    ${isMobile ? 'text-xs' : 'text-sm'}
+                  `}>
                     недостижима
                   </div>
                 )}
@@ -355,36 +250,31 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
       )}
 
       {connectivity && (
-        <div style={{
-          ...resultStyle,
-          border: '2px solid #e9d8fd'
-        }}>
-          <h3 style={{
-            ...titleStyle,
-            color: '#553c9a'
-          }}>
-            <div style={{
-              ...iconStyle,
-              backgroundColor: '#9f7aea'
-            }}></div>
+        <div className={`
+          bg-white border-2 border-purple-200 rounded-lg shadow-sm
+          ${isMobile ? 'p-4 mb-3' : 'p-5 mb-4'}
+        `}>
+          <h3 className={`
+            flex items-center gap-2 mb-3 font-semibold
+            ${isMobile ? 'text-base text-purple-800' : 'text-lg text-purple-900'}
+          `}>
+            <div className={`rounded-full bg-purple-500 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}></div>
             Связность графа
           </h3>
 
-          <div style={{
-            padding: isMobile ? '12px' : '16px',
-            backgroundColor: connectivity.isConnected ? '#f0fff4' : '#fff5f5',
-            borderRadius: '6px',
-            marginBottom: isMobile ? '12px' : '16px',
-            border: `2px solid ${connectivity.isConnected ? '#9ae6b4' : '#fc8181'}`
-          }}>
-            <div style={{
-              fontSize: isMobile ? '14px' : '16px',
-              fontWeight: '600',
-              color: connectivity.isConnected ? '#276749' : '#c53030',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
+          <div className={`
+            rounded-lg mb-4 border-2
+            ${connectivity.isConnected
+            ? 'bg-green-50 border-green-300'
+            : 'bg-red-50 border-red-300'
+          }
+            ${isMobile ? 'p-3' : 'p-4'}
+          `}>
+            <div className={`
+              font-semibold flex items-center gap-1.5
+              ${connectivity.isConnected ? 'text-green-800' : 'text-red-800'}
+              ${isMobile ? 'text-sm' : 'text-base'}
+            `}>
               {connectivity.isConnected ? (
                 <svg width={isMobile ? '16' : '20'} height={isMobile ? '16' : '20'} viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" strokeWidth="2">
@@ -407,54 +297,40 @@ export const AnalysisResultsWidget: React.FC<AnalysisResultsWidgetProps> = ({
 
           {connectivity.components.length > 0 && (
             <div>
-              <h4 style={{
-                margin: '0 0 8px 0',
-                color: '#553c9a',
-                fontSize: isMobile ? '14px' : '16px',
-                fontWeight: '600'
-              }}>
+              <h4 className={`
+                mb-2 font-semibold text-purple-800
+                ${isMobile ? 'text-sm' : 'text-base'}
+              `}>
                 Компоненты {graphType === 'undirected' ? 'связности' : 'слабой связности'}:
               </h4>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: isMobile ? '6px' : '10px',
-                maxHeight: isMobile ? '120px' : 'none',
-                overflowY: 'auto'
-              }}>
+              <div className={`
+                flex flex-wrap gap-2 overflow-y-auto
+                ${isMobile ? 'max-h-32' : ''}
+              `}>
                 {connectivity.components.map((component, index) => (
                   <div
                     key={index}
-                    style={{
-                      padding: isMobile ? '8px 12px' : '12px 16px',
-                      backgroundColor: '#faf5ff',
-                      borderRadius: '8px',
-                      border: '1px solid #d6bcfa',
-                      minWidth: isMobile ? '100px' : '120px',
-                      flex: isMobile ? '1 1 calc(50% - 6px)' : 'none'
-                    }}
+                    className={`
+                      bg-purple-50 border border-purple-300 rounded-lg
+                      ${isMobile ? 'px-3 py-2 min-w-[100px] flex-1 basis-[calc(50%-4px)]' : 'px-4 py-3 min-w-[120px]'}
+                    `}
                   >
-                    <div style={{
-                      fontSize: isMobile ? '11px' : '12px',
-                      color: '#9f7aea',
-                      marginBottom: '4px',
-                      fontWeight: '500'
-                    }}>
+                    <div className={`
+                      text-purple-600 mb-1 font-medium
+                      ${isMobile ? 'text-xs' : 'text-sm'}
+                    `}>
                       Компонента {index + 1}
                     </div>
-                    <div style={{
-                      fontWeight: '600',
-                      color: '#553c9a',
-                      fontSize: isMobile ? '12px' : '14px',
-                      wordBreak: 'break-word'
-                    }}>
+                    <div className={`
+                      font-semibold text-purple-800 break-words
+                      ${isMobile ? 'text-xs' : 'text-sm'}
+                    `}>
                       {component.join(', ')}
                     </div>
-                    <div style={{
-                      fontSize: isMobile ? '10px' : '11px',
-                      color: '#a0aec0',
-                      marginTop: '2px'
-                    }}>
+                    <div className={`
+                      text-gray-500 mt-1
+                      ${isMobile ? 'text-xs' : 'text-sm'}
+                    `}>
                       {component.length} вершин
                     </div>
                   </div>

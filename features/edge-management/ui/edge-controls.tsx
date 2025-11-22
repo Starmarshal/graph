@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {Edge, Vertex} from '@/shared/types/grpah.interface';
+import Button from '@/shared/ui/Button';
+import Input from '@/shared/ui/Input';
 
 interface EdgeControlsProps {
   edges: Edge[];
@@ -19,30 +21,6 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
   const [edgeFrom, setEdgeFrom] = useState<string>('');
   const [edgeTo, setEdgeTo] = useState<string>('');
   const [edgeWeight, setEdgeWeight] = useState<string>('1');
-
-  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>): void => {
-    e.target.style.borderColor = '#007bff';
-    e.target.style.boxShadow = '0 0 0 3px rgba(0, 123, 255, 0.1)';
-  };
-
-  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>): void => {
-    e.target.style.borderColor = '#e1e5e9';
-    e.target.style.boxShadow = 'none';
-  };
-
-  const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    if (!isMobile) {
-      e.currentTarget.style.backgroundColor = '#0056b3';
-      e.currentTarget.style.transform = 'translateY(-1px)';
-    }
-  };
-
-  const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    if (!isMobile) {
-      e.currentTarget.style.backgroundColor = '#007bff';
-      e.currentTarget.style.transform = 'translateY(0)';
-    }
-  };
 
   const handleAddEdge = (): void => {
     if (!edgeFrom || !edgeTo || !edgeWeight) return;
@@ -71,172 +49,79 @@ export const EdgeControls: React.FC<EdgeControlsProps> = ({
   };
 
   return (
-    <div style={{marginBottom: isMobile ? '16px' : '24px'}}>
-      <h4 style={{
-        marginBottom: isMobile ? '8px' : '12px',
-        color: '#333',
-        fontSize: isMobile ? '14px' : '16px',
-        fontWeight: '600'
-      }}>
+    <div className="mb-6">
+      <h4 className="mb-3 text-gray-800 text-base font-semibold">
         Управление рёбрами
       </h4>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr',
-        gridTemplateRows: 'auto auto',
-        gap: isMobile ? '4px' : '8px',
-        marginBottom: isMobile ? '8px' : '8px',
-        width: '100%'
-      }}>
-        <input
+      <div className="grid grid-cols-2 auto-rows-auto gap-2 mb-2 w-full">
+        <Input
           type="number"
           placeholder="Из вершины"
           value={edgeFrom}
           onChange={(e) => setEdgeFrom(e.target.value)}
-          style={{
-            padding: isMobile ? '8px 10px' : '10px 12px',
-            width: '100%',
-            border: '1px solid #e1e5e9',
-            borderRadius: '6px',
-            fontSize: isMobile ? '14px' : '14px',
-            transition: 'all 0.2s ease',
-            gridColumn: '1 / 2',
-            gridRow: '1 / 2'
-          }}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
+          className="w-full"
         />
-        <input
+        <Input
           type="number"
           placeholder="В вершину"
           value={edgeTo}
           onChange={(e) => setEdgeTo(e.target.value)}
-          style={{
-            padding: isMobile ? '8px 10px' : '10px 12px',
-            width: '100%',
-            border: '1px solid #e1e5e9',
-            borderRadius: '6px',
-            fontSize: isMobile ? '14px' : '14px',
-            transition: 'all 0.2s ease',
-            gridColumn: '2 / 3',
-            gridRow: '1 / 2'
-          }}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
+          className="w-full"
         />
-        <input
+        <Input
           type="number"
           placeholder="Вес"
           value={edgeWeight}
           onChange={(e) => setEdgeWeight(e.target.value)}
-          style={{
-            padding: isMobile ? '8px 10px' : '10px 12px',
-            width: '100%',
-            border: '1px solid #e1e5e9',
-            borderRadius: '6px',
-            fontSize: isMobile ? '14px' : '14px',
-            transition: 'all 0.2s ease',
-            gridColumn: '1 / 2',
-            gridRow: '2 / 3'
-          }}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
+          className="w-full"
         />
-        <button
+        <Button
           onClick={handleAddEdge}
-          style={{
-            padding: isMobile ? '8px 12px' : '10px 16px',
-            width: '100%',
-            border: 'none',
-            borderRadius: '6px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: isMobile ? '13px' : '14px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            gridColumn: '2 / 3',
-            gridRow: '2 / 3'
-          }}
-          onMouseEnter={handleButtonMouseEnter}
-          onMouseLeave={handleButtonMouseLeave}
+          className="w-full bg-blue-500 hover:bg-blue-600"
         >
           Добавить ребро
-        </button>
+        </Button>
       </div>
 
       <div>
-        <h5 style={{
-          marginBottom: isMobile ? '6px' : '8px',
-          color: '#666',
-          fontSize: isMobile ? '13px' : '14px',
-          fontWeight: '600'
-        }}>
+        <h5 className="mb-2 text-gray-500 text-sm font-semibold">
           Существующие рёбра ({edges.length})
         </h5>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: isMobile ? '6px' : '8px',
-          maxHeight: isMobile ? '80px' : '120px',
-          overflowY: 'auto',
-          padding: isMobile ? '8px' : '12px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '6px',
-          border: '1px solid #e9ecef',
-          justifyContent: 'center', // Выравнивание по центру
-          alignItems: 'center' // Выравнивание по вертикали по центру
-        }}>
+        <div
+          className="
+          flex flex-wrap gap-2 max-h-[120px] overflow-y-auto p-3
+          bg-gray-50 rounded-md border border-gray-200
+          justify-center items-center
+          "
+        >
           {edges.map((edge: Edge, index: number) => (
-            <div key={index} style={{
-              padding: isMobile ? '4px 8px' : '6px 12px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: isMobile ? '4px' : '6px',
-              fontSize: isMobile ? '12px' : '13px',
-              fontWeight: '500'
-            }}>
+            <div
+              key={index}
+              className="
+              px-3 py-1.5 bg-green-600 text-white
+              rounded-full flex items-center gap-1.5 text-sm font-medium
+              "
+            >
               <span>{edge.from} → {edge.to} (вес: {edge.weight})</span>
-              <button
+              <Button
                 onClick={() => onRemoveEdge(edge.from, edge.to)}
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.3)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: isMobile ? '16px' : '18px',
-                  height: isMobile ? '16px' : '18px',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '10px' : '12px',
-                  lineHeight: '1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
-                }}
+                className="
+                  bg-white/30 hover:bg-white/50
+                  !rounded-full w-[18px]
+                  text-xs leading-none
+                  !p-0 !h-[18px]
+                  transition-all duration-200
+                  hover:!translate-y-0
+                  flex items-center justify-center
+                "
               >
                 ×
-              </button>
+              </Button>
             </div>
           ))}
           {edges.length === 0 && (
-            <div style={{
-              color: '#6c757d',
-              fontSize: isMobile ? '12px' : '13px',
-              textAlign: 'center',
-              width: '100%',
-              padding: isMobile ? '4px' : '8px'
-            }}>
+            <div className="text-gray-500 text-sm text-center w-full p-2">
               Нет рёбер
             </div>
           )}

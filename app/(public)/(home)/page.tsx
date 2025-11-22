@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { GraphVisualizerWidget } from '@/widgets/graph-visualizer/ui/graph-visualizer';
-import { GraphControlsWidget } from '@/widgets/graph-controls/ui/graph-controls';
-import { AnalysisResultsWidget } from '@/widgets/analysis-results/ui/analysis-results';
-import { useGraph } from '@/entities/graph/model/use-graph';
+import React, {useState, useEffect} from 'react';
+import {GraphVisualizerWidget} from '@/widgets/graph-visualizer/ui/graph-visualizer';
+import {GraphControlsWidget} from '@/widgets/graph-controls/ui/graph-controls';
+import {AnalysisResultsWidget} from '@/widgets/analysis-results/ui/analysis-results';
+import {useGraph} from '@/entities/graph/model/use-graph';
+import Button from '@/shared/ui/Button';
 
 const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -35,7 +36,7 @@ const Home: React.FC = () => {
     toggleGraphType,
     createEmptyGraph,
     exportGraph
-  } = useGraph({ isMobile });
+  } = useGraph({isMobile});
 
   useEffect(() => {
     const checkMobile = () => {
@@ -50,167 +51,132 @@ const Home: React.FC = () => {
     };
   }, []);
 
-  const handleButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isMobile) {
-      const target = e.currentTarget as HTMLButtonElement;
-      target.style.backgroundColor = '#f7fafc';
-      target.style.borderColor = '#cbd5e0';
-    }
-  };
-
-  const handleButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isMobile) {
-      const target = e.currentTarget as HTMLButtonElement;
-      target.style.backgroundColor = 'white';
-      target.style.borderColor = '#e2e8f0';
-    }
-  };
-
-  const handleExportButtonMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isMobile) {
-      const target = e.currentTarget as HTMLButtonElement;
-      target.style.backgroundColor = '#38a169';
-    }
-  };
-
-  const handleExportButtonMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isMobile) {
-      const target = e.currentTarget as HTMLButtonElement;
-      target.style.backgroundColor = '#48bb78';
-    }
-  };
-
   return (
-    <div style={{
-      padding: isMobile ? '12px' : '24px',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      minHeight: '100vh',
-      backgroundColor: '#f8fafc'
-    }}>
-      <header style={{
-        marginBottom: isMobile ? '16px' : '24px',
-        padding: isMobile ? '16px' : '24px',
-        backgroundColor: 'white',
-        borderRadius: isMobile ? '8px' : '12px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        border: '1px solid #e2e8f0'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: isMobile ? '16px' : '20px',
-          flexWrap: 'wrap',
-          gap: isMobile ? '12px' : '16px',
-          flexDirection: isMobile ? 'column' : 'row'
-        }}>
-          <div style={{ flex: 1 }}>
-            <h1 style={{
-              color: '#1a202c',
-              marginBottom: isMobile ? '6px' : '8px',
-              fontSize: isMobile ? '20px' : '28px',
-              fontWeight: '700',
-              lineHeight: 1.2
-            }}>
+    <div className={`
+        ${isMobile ? 'p-3' : 'p-6'} 
+        font-sans 
+        min-h-screen 
+        bg-slate-50
+      `}
+    >
+      <header className={`
+          ${isMobile ? 'mb-4 p-4 rounded-lg' : 'mb-6 p-6 rounded-xl'}
+          bg-white
+          shadow-sm
+          border border-slate-200
+        `}
+      >
+        <div
+          className={`
+            flex
+            justify-between
+            items-start
+            flex-wrap
+            ${isMobile ? 'flex-col mb-4 gap-3' : 'flex-row mb-5 gap-4'}
+          `}
+        >
+          <div className="flex-1">
+            <h1 className={`
+                text-gray-900
+                ${isMobile ? 'mb-1.5 text-xl' : 'mb-2 text-2xl'}
+                font-bold
+                leading-tight
+              `}
+            >
               Визуализатор графов
             </h1>
-            <p style={{
-              color: '#718096',
-              marginBottom: '0',
-              fontSize: isMobile ? '13px' : '16px',
-              lineHeight: '1.5'
-            }}>
+            <p className={`
+                text-gray-600
+                mb-0
+                ${isMobile ? 'text-xs' : 'text-base'}
+                leading-relaxed
+              `}
+            >
               Создавайте и анализируйте графы с помощью алгоритмов Беллмана-Форда и Краскала
             </p>
           </div>
         </div>
 
-        <div style={{
-          display: 'flex',
-          gap: isMobile ? '8px' : '12px',
-          flexWrap: 'wrap',
-          justifyContent: isMobile ? 'center' : 'flex-start'
-        }}>
-          <button
+        <div
+          className={`
+            flex
+            flex-wrap
+            ${isMobile ? 'justify-center gap-2' : 'justify-start gap-3'}
+          `}
+        >
+          <Button
             onClick={toggleGraphType}
-            style={{
-              padding: isMobile ? '8px 16px' : '10px 20px',
-              border: '1px solid #e2e8f0',
-              borderRadius: '6px',
-              backgroundColor: 'white',
-              color: '#4a5568',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: isMobile ? '12px' : '14px',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              flex: isMobile ? 1 : 'none',
-              minWidth: isMobile ? 'auto' : '140px'
-            }}
-            onMouseEnter={handleButtonMouseEnter}
-            onMouseLeave={handleButtonMouseLeave}
+            className={`
+              hover:!translate-y-0
+              ${isMobile ? '!px-4 !py-2' : '!px-5 !py-2.5'}
+              !border !border-slate-200 !border-solid
+              !rounded-md
+              !bg-white
+              !text-slate-600
+              ${isMobile ? '!text-xs' : '!text-sm'}
+              flex items-center
+              gap-1.5
+              ${isMobile ? '!flex-1' : '!flex-none'}
+              ${isMobile ? '!min-w-auto' : '!min-w-[140px]'}
+              focus:!outline-none focus:!ring-0 focus:!ring-opacity-0
+              hover:!bg-slate-50
+            `}
           >
-            <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width={isMobile ? '14' : '16'} height={isMobile ? '14' : '16'} viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" strokeWidth="2">
               <path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
             </svg>
             {isMobile ? 'Тип' : 'Переключить тип'}
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={createEmptyGraph}
-            style={{
-              padding: isMobile ? '8px 16px' : '10px 20px',
-              border: '1px solid #e2e8f0',
-              borderRadius: '6px',
-              backgroundColor: 'white',
-              color: '#4a5568',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: isMobile ? '12px' : '14px',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              flex: isMobile ? 1 : 'none',
-              minWidth: isMobile ? 'auto' : '120px'
-            }}
-            onMouseEnter={handleButtonMouseEnter}
-            onMouseLeave={handleButtonMouseLeave}
+            className={`
+              hover:!translate-y-0
+              ${isMobile ? '!px-4 !py-2' : '!px-5 !py-2.5'}
+              !border !border-slate-200 !border-solid
+              !rounded-md
+              !bg-white
+              !text-slate-600
+              ${isMobile ? '!text-xs' : '!text-sm'}
+              flex items-center
+              gap-1.5
+              ${isMobile ? '!flex-1' : '!flex-none'}
+              ${isMobile ? '!min-w-auto' : '!min-w-[120px]'}
+              focus:!outline-none focus:!ring-0 focus:!ring-opacity-0
+              hover:!bg-slate-50
+            `}
           >
-            <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width={isMobile ? '14' : '16'} height={isMobile ? '14' : '16'} viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" strokeWidth="2">
               <path d="M12 5v14M5 12h14"/>
             </svg>
             {isMobile ? 'Новый' : 'Новый граф'}
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={exportGraph}
-            style={{
-              padding: isMobile ? '8px 16px' : '10px 20px',
-              border: 'none',
-              borderRadius: '6px',
-              backgroundColor: '#48bb78',
-              color: 'white',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: isMobile ? '12px' : '14px',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              flex: isMobile ? 1 : 'none',
-              minWidth: isMobile ? 'auto' : '100px'
-            }}
-            onMouseEnter={handleExportButtonMouseEnter}
-            onMouseLeave={handleExportButtonMouseLeave}
+            className={`
+              hover:!translate-y-0
+              ${isMobile ? '!px-4 !py-2' : '!px-5 !py-2.5'}
+              !border !border-slate-200 !border-solid
+              !rounded-md
+              bg-green-600 
+              ${isMobile ? '!text-xs' : '!text-sm'}
+              flex items-center
+              gap-1.5
+              ${isMobile ? '!flex-1' : '!flex-none'}
+              ${isMobile ? '!min-w-auto' : '!min-w-[100px]'}
+              focus:!outline-none focus:!ring-0 focus:!ring-opacity-0
+              hover:bg-green-700
+            `}
           >
-            <svg width={isMobile ? "14" : "16"} height={isMobile ? "14" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width={isMobile ? '14' : '16'} height={isMobile ? '14' : '16'} viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
             {isMobile ? 'Экспорт' : 'Экспорт'}
-          </button>
+          </Button>
         </div>
       </header>
 

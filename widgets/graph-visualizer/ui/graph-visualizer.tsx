@@ -14,15 +14,7 @@ interface GraphVisualizerWidgetProps {
 
 export const GraphVisualizerWidget: React.FC<GraphVisualizerWidgetProps> = (props) => {
   return (
-    <div style={{
-      backgroundColor: 'white',
-      borderRadius: '12px',
-      padding: '0',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      marginBottom: '24px',
-      border: '1px solid #e2e8f0',
-      overflow: 'hidden'
-    }}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
       <GraphCanvas {...props} />
     </div>
   );

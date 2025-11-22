@@ -302,20 +302,22 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
 
     const rect = canvas.getBoundingClientRect();
 
+    // Упрощенный расчет - всегда используем прямые координаты
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
     if (isMobile) {
-      // Для мобильных учитываем масштаб и смещение
-      const x = (clientX - rect.left - offset.x * scale) / scale;
-      const y = (clientY - rect.top - offset.y * scale) / scale;
-      return { x, y };
-    } else {
-      // Для десктопа - прямые координаты
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
+      // Для мобильных применяем обратное масштабирование
       return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY
+        x: x / scale - offset.x,
+        y: y / scale - offset.y
       };
     }
+
+    return { x, y };
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -377,25 +379,13 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      style={{
-        position: 'relative',
-        padding: isMobile ? '8px' : '20px',
-        backgroundColor: '#ffffff',
-        borderRadius: isMobile ? '8px' : '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e1e5e9',
-        width: '100%',
-        maxWidth: '100%',
-        boxSizing: 'border-box',
-        overflow: 'hidden'
-      }}
+      className={`
+        relative p-5 bg-white rounded-xl shadow-sm border border-gray-200
+        w-full max-w-full box-border overflow-hidden
+        ${isMobile ? 'p-2 rounded-lg' : ''}
+      `}
     >
-      <div style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%'
-      }}>
+      <div className="relative flex justify-center w-full">
         <canvas
           ref={canvasRef}
           onPointerDown={handlePointerDown}
@@ -405,82 +395,46 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          style={{
-            border: '1px solid #e1e5e9',
-            borderRadius: isMobile ? '6px' : '8px',
-            cursor: isDragging ? 'grabbing' : 'pointer',
-            backgroundColor: '#fafbfc',
-            boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.04)',
-            display: 'block',
-            maxWidth: '100%',
-            height: 'auto',
-            touchAction: isMobile ? 'pan-x pan-y' : 'none'
-          }}
+          className={`
+            border border-gray-200 bg-gray-50
+            cursor-pointer block max-w-full h-auto
+            shadow-inner
+            ${isMobile ? 'rounded-md touch-pan-x touch-pan-y' : 'rounded-lg'}
+            ${isDragging ? 'cursor-grabbing' : ''}
+          `}
         />
 
         {!isMobile && (
-          <div style={{
-            position: 'absolute',
-            top: '16px',
-            left: '16px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            padding: '16px',
-            borderRadius: '12px',
-            border: '1px solid #e1e5e9',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            backdropFilter: 'blur(8px)',
-            minWidth: '140px'
-          }}>
-            <div style={{
-              fontSize: '14px',
-              color: '#333',
-              marginBottom: '12px',
-              fontWeight: '600',
-              borderBottom: '2px solid #f0f2f5',
-              paddingBottom: '8px'
-            }}>
+          <div className="absolute top-4 left-4 bg-white/95 p-4 rounded-xl border border-gray-200 shadow-lg backdrop-blur-md min-w-[140px]">
+            <div className="text-sm text-gray-800 mb-3 font-semibold border-b border-gray-100 pb-2">
               Статистика графа
             </div>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              fontSize: '13px'
-            }}>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <span style={{color: '#666'}}>Вершины:</span>
-                <span style={{fontWeight: '600', color: '#007bff'}}>{graphData.vertices.length}</span>
+            <div className="flex flex-col gap-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Вершины:</span>
+                <span className="font-semibold text-blue-600">{graphData.vertices.length}</span>
               </div>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <span style={{color: '#666'}}>Рёбра:</span>
-                <span style={{fontWeight: '600', color: '#28a745'}}>{graphData.edges.length}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Рёбра:</span>
+                <span className="font-semibold text-green-600">{graphData.edges.length}</span>
               </div>
             </div>
           </div>
         )}
 
-        <div style={{
-          position: 'absolute',
-          top: isMobile ? '8px' : '16px',
-          right: isMobile ? '8px' : '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}>
-          <div style={{
-            padding: isMobile ? '6px 12px' : '8px 16px',
-            backgroundColor: graphData.type === 'undirected' ? '#e8f5e8' : '#fff3e0',
-            color: graphData.type === 'undirected' ? '#2e7d32' : '#e65100',
-            borderRadius: '20px',
-            fontSize: isMobile ? '11px' : '12px',
-            fontWeight: '600',
-            border: graphData.type === 'undirected' ? '1px solid #c8e6c9' : '1px solid #ffcc80',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            backdropFilter: 'blur(4px)'
-          }}>
+        <div className={`
+          absolute flex flex-col gap-2
+          ${isMobile ? 'top-2 right-2' : 'top-4 right-4'}
+        `}>
+          <div className={`
+            px-4 py-2 rounded-full font-semibold border shadow-sm
+            flex items-center gap-1.5 backdrop-blur-sm
+            ${graphData.type === 'undirected'
+            ? 'bg-green-50 text-green-800 border-green-200'
+            : 'bg-orange-50 text-orange-800 border-orange-200'
+          }
+            ${isMobile ? 'text-xs px-3 py-1.5' : 'text-sm'}
+          `}>
             {graphData.type === 'undirected' ? (
               <>
                 <svg width={isMobile ? "12" : "14"} height={isMobile ? "12" : "14"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -499,20 +453,11 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           </div>
 
           {isDragging && (
-            <div style={{
-              padding: isMobile ? '4px 8px' : '6px 12px',
-              backgroundColor: '#e3f2fd',
-              color: '#1565c0',
-              borderRadius: '20px',
-              fontSize: isMobile ? '10px' : '12px',
-              fontWeight: '600',
-              border: '1px solid #bbdefb',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(4px)'
-            }}>
+            <div className={`
+              px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full font-semibold 
+              border border-blue-200 shadow-sm flex items-center gap-1.5 backdrop-blur-sm
+              ${isMobile ? 'text-xs px-2 py-1' : 'text-sm'}
+            `}>
               <svg width={isMobile ? "10" : "14"} height={isMobile ? "10" : "14"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
@@ -522,30 +467,15 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
         </div>
 
         {isMobile && (
-          <div style={{
-            position: 'absolute',
-            bottom: '8px',
-            left: '8px',
-            right: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            border: '1px solid #e1e5e9',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '12px'
-          }}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
-                <div style={{width: '8px', height: '8px', backgroundColor: '#007bff', borderRadius: '50%'}}></div>
-                <span style={{color: '#666'}}>Вершин: {graphData.vertices.length}</span>
+          <div className="absolute bottom-2 left-2 right-2 bg-white/95 px-3 py-2 rounded-lg border border-gray-200 shadow-sm backdrop-blur-sm flex justify-between items-center text-xs">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-gray-600">Вершин: {graphData.vertices.length}</span>
               </div>
-              <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
-                <div style={{width: '8px', height: '8px', backgroundColor: '#28a745', borderRadius: '50%'}}></div>
-                <span style={{color: '#666'}}>Рёбер: {graphData.edges.length}</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-gray-600">Рёбер: {graphData.edges.length}</span>
               </div>
             </div>
           </div>
@@ -553,31 +483,21 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       </div>
 
       {/* Легенда графа */}
-      <div style={{
-        marginTop: isMobile ? '12px' : '16px',
-        padding: isMobile ? '12px' : '16px',
-        backgroundColor: '#f8f9fa',
-        borderRadius: isMobile ? '6px' : '8px',
-        border: '1px solid #e9ecef',
-        width: '100%',
-        boxSizing: 'border-box'
-      }}>
-        <h5 style={{
-          margin: '0 0 8px 0',
-          color: '#333',
-          fontSize: isMobile ? '13px' : '14px',
-          fontWeight: '600',
-          textAlign: 'center'
-        }}>
+      <div className={`
+        mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200
+        w-full box-border
+        ${isMobile ? 'mt-3 p-3 rounded-md' : ''}
+      `}>
+        <h5 className={`
+          m-0 mb-2 text-gray-800 font-semibold text-center
+          ${isMobile ? 'text-sm mb-1' : 'text-base'}
+        `}>
           Легенда графа
         </h5>
-        <div style={{
-          display: 'flex',
-          gap: isMobile ? '12px' : '16px',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          alignItems: 'center'
-        }}>
+        <div className={`
+          flex gap-4 justify-center flex-wrap items-center min-h-10
+          ${isMobile ? 'gap-3' : ''}
+        `}>
           {[
             {color: '#6c757d', label: 'Обычная вершина', type: 'node'},
             {color: '#007bff', label: 'Выбранная вершина', type: 'node'},
@@ -590,27 +510,20 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           ].map((item, index) => (
             <div
               key={index}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '4px' : '6px',
-                padding: isMobile ? '4px 8px' : '6px 10px',
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderRadius: '12px',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
-              }}
+              className={`
+                flex items-center gap-1.5 px-3 py-1.5 bg-white/70 rounded-full
+                shadow-sm h-[30px]
+                ${isMobile ? 'px-2 py-1 gap-1' : ''}
+              `}
             >
               {item.type === 'node' && (
                 <div
-                  style={{
-                    width: isMobile ? '12px' : '14px',
-                    height: isMobile ? '12px' : '14px',
-                    backgroundColor: item.color,
-                    borderRadius: '50%',
-                    border: '2px solid white',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                    flexShrink: 0
-                  }}
+                  className={`
+                    bg-${item.color.replace('#', '')} rounded-full border-2 border-white
+                    shadow-sm flex-shrink-0
+                    ${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'}
+                  `}
+                  style={{ backgroundColor: item.color }}
                 />
               )}
               {item.type === 'arrow' && (
@@ -627,29 +540,21 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 </svg>
               )}
               {item.type === 'line' && (
-                <div style={{
-                  width: isMobile ? '16px' : '20px',
-                  height: isMobile ? '2px' : '3px',
-                  backgroundColor: item.color,
-                  borderRadius: '1px',
-                  flexShrink: 0
-                }}/>
+                <div
+                  className={`flex-shrink-0 rounded-sm ${isMobile ? 'w-4 h-0.5' : 'w-5 h-1'}`}
+                  style={{ backgroundColor: item.color }}
+                />
               )}
               {item.type === 'edge' && (
-                <div style={{
-                  width: isMobile ? '16px' : '20px',
-                  height: isMobile ? '3px' : '4px',
-                  backgroundColor: item.color,
-                  borderRadius: '2px',
-                  flexShrink: 0
-                }}/>
+                <div
+                  className={`flex-shrink-0 rounded-sm ${isMobile ? 'w-4 h-1' : 'w-5 h-1.5'}`}
+                  style={{ backgroundColor: item.color }}
+                />
               )}
-              <span style={{
-                fontSize: isMobile ? '11px' : '12px',
-                color: '#495057',
-                fontWeight: '500',
-                whiteSpace: 'nowrap'
-              }}>
+              <span className={`
+                text-gray-700 font-medium whitespace-nowrap
+                ${isMobile ? 'text-xs' : 'text-sm'}
+              `}>
                 {item.label}
               </span>
             </div>

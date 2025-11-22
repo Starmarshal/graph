@@ -154,21 +154,9 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
   // Мобильный интерфейс с табами
   if (isMobile) {
     return (
-      <div style={{
-        position: 'sticky',
-        top: '0',
-        backgroundColor: '#ffffff',
-        border: '1px solid #e1e5e9',
-        borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        marginBottom: '16px'
-      }}>
+      <div className="sticky top-0 bg-white border border-gray-200 rounded-xl shadow-sm mb-4 font-sans">
         {/* Табы для мобильных - только 2 вкладки */}
-        <div style={{
-          display: 'flex',
-          borderBottom: '2px solid #f0f2f5'
-        }}>
+        <div className="flex border-b-2 border-gray-100">
           {[
             { id: 'basic' as const, label: 'Управление' },
             { id: 'analysis' as const, label: 'Анализ' }
@@ -176,21 +164,14 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                flex: 1,
-                padding: '12px 8px',
-                border: 'none',
-                backgroundColor: activeTab === tab.id ? '#007bff' : 'transparent',
-                color: activeTab === tab.id ? 'white' : '#666',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px'
-              }}
+              className={`
+                flex-1 px-2 py-3 border-none transition-all duration-200 ease-in-out
+                flex items-center justify-center gap-1 font-semibold text-sm
+                ${activeTab === tab.id
+                ? 'bg-blue-500 text-white rounded-xl'
+                : 'bg-transparent text-gray-600 hover:text-gray-800'
+              }
+              `}
             >
               <span>{tab.label}</span>
             </button>
@@ -198,14 +179,9 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
         </div>
 
         {/* Контент табов */}
-        <div style={{
-          padding: '16px',
-          maxHeight: '50vh',
-          overflowY: 'auto'
-        }}>
+        <div className="p-4 max-h-[50vh] overflow-y-auto">
           {activeTab === 'basic' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
+            <div className="space-y-4">
               <GraphImportExport
                 graphData={graphData}
                 onImport={handleImportGraph}
@@ -224,12 +200,11 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
                 onAddEdge={onAddEdge}
                 onRemoveEdge={onRemoveEdge}
               />
-
             </div>
           )}
 
           {activeTab === 'analysis' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="space-y-4">
               <GraphInfoControl
                 onListVertices={handleListVertices}
                 onListEdges={handleListEdges}
@@ -262,72 +237,55 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
 
   // Десктопный интерфейс
   return (
-    <div style={{
-      position: 'sticky',
-      top: '24px',
-      padding: '24px',
-      border: '1px solid #e1e5e9',
-      borderRadius: '12px',
-      maxHeight: '80vh',
-      overflowY: 'auto',
-      backgroundColor: '#ffffff',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      <h3 style={{
-        marginTop: 0,
-        marginBottom: '24px',
-        color: '#1a1a1a',
-        fontSize: '20px',
-        fontWeight: '700',
-        paddingBottom: '16px',
-        borderBottom: '2px solid #f0f2f5'
-      }}>
+    <div className="sticky top-6 p-6 border border-gray-200 rounded-xl max-h-[100vh] overflow-y-auto bg-white shadow-sm font-sans">
+      <h3 className="mt-0 mb-6 text-gray-900 text-xl font-bold pb-4 border-b-2 border-gray-100">
         Управление графом
       </h3>
 
-      <GraphImportExport
-        graphData={graphData}
-        onImport={handleImportGraph}
-        onExport={handleExportGraph}
-      />
+      <div className="space-y-6">
+        <GraphImportExport
+          graphData={graphData}
+          onImport={handleImportGraph}
+          onExport={handleExportGraph}
+        />
 
-      <VertexControls
-        vertices={graphData.vertices}
-        onAddVertex={onAddVertex}
-        onRemoveVertex={onRemoveVertex}
-      />
+        <VertexControls
+          vertices={graphData.vertices}
+          onAddVertex={onAddVertex}
+          onRemoveVertex={onRemoveVertex}
+        />
 
-      <EdgeControls
-        edges={graphData.edges}
-        vertices={graphData.vertices}
-        onAddEdge={onAddEdge}
-        onRemoveEdge={onRemoveEdge}
-      />
+        <EdgeControls
+          edges={graphData.edges}
+          vertices={graphData.vertices}
+          onAddEdge={onAddEdge}
+          onRemoveEdge={onRemoveEdge}
+        />
 
-      <GraphInfoControl
-        onListVertices={handleListVertices}
-        onListEdges={handleListEdges}
-        verticesList={verticesList}
-        edgesList={edgesList}
-      />
+        <GraphInfoControl
+          onListVertices={handleListVertices}
+          onListEdges={handleListEdges}
+          verticesList={verticesList}
+          edgesList={edgesList}
+        />
 
-      <ShortestPathControl
-        vertices={graphData.vertices}
-        onFindShortestPath={handleFindShortestPath}
-      />
+        <ShortestPathControl
+          vertices={graphData.vertices}
+          onFindShortestPath={handleFindShortestPath}
+        />
 
-      <DistancesControl
-        vertices={graphData.vertices}
-        onFindDistances={handleFindDistances}
-      />
+        <DistancesControl
+          vertices={graphData.vertices}
+          onFindDistances={handleFindDistances}
+        />
 
-      <MSTControl onFindMST={handleFindMST} />
+        <MSTControl onFindMST={handleFindMST} />
 
-      <ConnectivityControl
-        graphType={graphData.type}
-        onCheckConnectivity={handleCheckConnectivity}
-      />
+        <ConnectivityControl
+          graphType={graphData.type}
+          onCheckConnectivity={handleCheckConnectivity}
+        />
+      </div>
     </div>
   );
 };
