@@ -29,13 +29,10 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   // Размеры рабочей области
-  // На десктопе - динамические, на мобильных - фиксированные
   const getWorkspaceSize = () => {
     if (isMobile) {
-      // На мобильных - фиксированная рабочая область 600x400
       return { width: 600, height: 400 };
     } else {
-      // На десктопе - рабочая область равна размеру канваса
       return { width: canvasSize.width, height: canvasSize.height };
     }
   };
@@ -45,30 +42,25 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       const containerWidth = containerRef.current.clientWidth;
 
       if (isMobile) {
-        // На мобильных - полная ширина с небольшими отступами
         const newWidth = containerWidth - 16;
         const newHeight = Math.min(newWidth * 0.8, 400);
         setCanvasSize({ width: newWidth, height: newHeight });
 
         const workspace = getWorkspaceSize();
-        // Рассчитываем масштаб для фиксированной рабочей области
         const scaleX = newWidth / workspace.width;
         const scaleY = newHeight / workspace.height;
-        const calculatedScale = Math.min(scaleX, scaleY) * 0.95; // 95% чтобы был небольшой зазор
+        const calculatedScale = Math.min(scaleX, scaleY) * 0.95;
 
         setScale(calculatedScale);
-        // Центрируем рабочую область
         setOffset({
           x: (newWidth / calculatedScale - workspace.width) / 2,
           y: (newHeight / calculatedScale - workspace.height) / 2
         });
       } else {
-        // На десктопе - занимаем всё доступное пространство
         const newWidth = containerWidth - 40;
         const newHeight = Math.round(newWidth * 0.75);
         setCanvasSize({ width: newWidth, height: newHeight });
 
-        // На десктопе масштаб 1:1, рабочая область = размеру канваса
         setScale(1);
         setOffset({ x: 0, y: 0 });
       }
@@ -105,7 +97,6 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     ctx.fillStyle = '#fafbfc';
     ctx.fillRect(0, 0, width, height);
 
-    // Рисуем сетку всегда
     ctx.strokeStyle = '#e9ecef';
     ctx.lineWidth = 0.5;
 
@@ -302,7 +293,6 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
 
     const rect = canvas.getBoundingClientRect();
 
-    // Упрощенный расчет - всегда используем прямые координаты
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -310,7 +300,6 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     const y = (clientY - rect.top) * scaleY;
 
     if (isMobile) {
-      // Для мобильных применяем обратное масштабирование
       return {
         x: x / scale - offset.x,
         y: y / scale - offset.y
@@ -350,6 +339,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     setIsDragging(null);
   };
 
+  // Простые обработчики для touch событий
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (e.touches.length === 1) {
       const touch = e.touches[0];
@@ -395,11 +385,15 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          // Отключаем прокрутку только для канваса
+          style={{
+            touchAction: 'none' // Полностью отключает жесты браузера на элементе
+          }}
           className={`
             border border-gray-200 bg-gray-50
             cursor-pointer block max-w-full h-auto
             shadow-inner
-            ${isMobile ? 'rounded-md touch-pan-x touch-pan-y' : 'rounded-lg'}
+            ${isMobile ? 'rounded-md' : 'rounded-lg'}
             ${isDragging ? 'cursor-grabbing' : ''}
           `}
         />
@@ -500,7 +494,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
         `}>
           {[
             {color: '#6c757d', label: 'Обычная вершина', type: 'node'},
-            {color: '#007bff', label: 'Выбранная вершина', type: 'node'},
+            ...(isMobile ? [] : [{color: '#007bff', label: 'Выбранная вершина', type: 'node'}]),
             {color: '#dc3545', label: 'Кратчайший путь', type: 'node'},
             {color: '#28a745', label: 'MST ребро', type: 'edge'},
             {color: '#6c757d', label: 'Обычное ребро', type: 'line'},
