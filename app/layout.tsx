@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {Geist} from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const geistSans = Geist({
@@ -24,8 +25,35 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="antialiased theme-light"
+      suppressHydrationWarning
     >
+    <head>
+      <Script
+        id="theme-init"
+        strategy="beforeInteractive"
+      >
+        {`
+          (function() {
+            try {
+              var mql = window.matchMedia('(prefers-color-scheme: dark)');
+              var setTheme = function(isDark) {
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+              };
+              setTheme(mql.matches);
+              // Listen for OS theme changes
+              if (typeof mql.addEventListener === 'function') {
+                mql.addEventListener('change', function(e) { setTheme(e.matches); });
+              } else if (typeof mql.addListener === 'function') {
+                // Safari
+                mql.addListener(function(e) { setTheme(e.matches); });
+              }
+            } catch (e) {
+              // noop
+            }
+          })();
+        `}
+      </Script>
+    </head>
     <body
       className={`${geistSans.variable} antialiased`}
     >

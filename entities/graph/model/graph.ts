@@ -209,7 +209,10 @@ export class Graph {
     };
   }
 
-  bellmanFord(start: number): { distances: Map<number, number>, predecessors: Map<number, number | null> } {
+  bellmanFord(start: number): {
+    distances: Map<number, number>,
+    predecessors: Map<number, number | null>
+  } {
     const distances = new Map<number, number>();
     const predecessors = new Map<number, number | null>();
 

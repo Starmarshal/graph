@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { GraphData, Vertex, Edge } from '@/shared/types/grpah.interface';
-import { GraphImportExport } from '@/features/graph-management/ui/graph-import-export';
-import { VertexControls } from '@/features/vertex-management/ui/vertex-controls';
-import { EdgeControls } from '@/features/edge-management/ui/edge-controls';
-import { ShortestPathControl } from '@/features/graph-analysis/ui/shortest-path-control';
-import { DistancesControl } from '@/features/graph-analysis/ui/distances-control';
-import { MSTControl } from '@/features/graph-analysis/ui/mst-control';
-import { ConnectivityControl } from '@/features/graph-analysis/ui/connectivity-control';
-import { GraphInfoControl } from '@/features/graph-analysis/ui/graph-info-control';
+import React, {useState, useEffect} from 'react';
+import {GraphData, Vertex, Edge} from '@/shared/types/grpah.interface';
+import {
+  GraphImportExport
+} from '@/features/graph-management/ui/graph-import-export';
+import {VertexControls} from '@/features/vertex-management/ui/vertex-controls';
+import {EdgeControls} from '@/features/edge-management/ui/edge-controls';
+import {
+  ShortestPathControl
+} from '@/features/graph-analysis/ui/shortest-path-control';
+import {DistancesControl} from '@/features/graph-analysis/ui/distances-control';
+import {MSTControl} from '@/features/graph-analysis/ui/mst-control';
+import {
+  ConnectivityControl
+} from '@/features/graph-analysis/ui/connectivity-control';
+import {
+  GraphInfoControl
+} from '@/features/graph-analysis/ui/graph-info-control';
 
 interface GraphControlsWidgetProps {
   graphData: GraphData;
@@ -53,7 +61,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     }
   }, [verticesList, edgesList, isMobile]);
 
-  const { Graph } = require('@/entities/graph/model/graph');
+  const {Graph} = require('@/entities/graph/model/graph');
 
   const handleFindShortestPath = (start: number, end: number): void => {
     const graph = new Graph();
@@ -113,7 +121,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const vertices = graph.getVertices();
-    onVerticesList({ vertices });
+    onVerticesList({vertices});
     if (isMobile) setActiveTab('analysis');
   };
 
@@ -121,7 +129,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const edges = graph.listOfEdges();
-    onEdgesList({ edges });
+    onEdgesList({edges});
     if (isMobile) setActiveTab('analysis');
   };
 
@@ -138,7 +146,7 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -158,8 +166,8 @@ export const GraphControlsWidget: React.FC<GraphControlsWidgetProps> = ({
         {/* Табы для мобильных - только 2 вкладки */}
         <div className="flex border-b-2 border-gray-100">
           {[
-            { id: 'basic' as const, label: 'Управление' },
-            { id: 'analysis' as const, label: 'Анализ' }
+            {id: 'basic' as const, label: 'Управление'},
+            {id: 'analysis' as const, label: 'Анализ'}
           ].map(tab => (
             <button
               key={tab.id}

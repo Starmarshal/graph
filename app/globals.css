@@ -1,63 +1,276 @@
 @import 'tailwindcss';
 
-* {
-    box-sizing: border-box;
-}
-
 html,
 body {
-    max-width: 100vw;
-    overflow-x: hidden;
-    font-family: system-ui, -apple-system, sans-serif;
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 body {
-    @apply bg-gray-50 text-gray-900 transition-colors duration-300;
+  @apply bg-gray-50 text-gray-900 transition-colors duration-300;
+}
+
+/* Базовая типографика: единый стиль текста и заголовков */
+@layer base {
+  h1 {
+    @apply text-3xl font-bold leading-tight tracking-tight mb-3 text-gray-900;
+  }
+
+  h2 {
+    @apply text-2xl font-bold leading-snug mb-3 text-gray-900;
+  }
+
+  h3 {
+    @apply text-xl font-semibold leading-snug mb-2.5 text-gray-900;
+  }
+
+  h4 {
+    @apply text-lg font-semibold leading-snug mb-2 text-gray-900;
+  }
+
+  h5 {
+    @apply text-base font-semibold leading-snug mb-1.5 text-gray-900;
+  }
+
+  h6 {
+    @apply text-sm font-semibold leading-snug mb-1 text-gray-900;
+  }
+
+  p {
+    @apply text-base leading-relaxed text-gray-700 mb-3;
+  }
+
+  small, .text-muted {
+    @apply text-sm text-gray-500;
+  }
+
+  a {
+    @apply text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline;
+  }
+
+  strong {
+    @apply font-semibold;
+  }
 }
 
 /* Тёмная тема через data-attribute */
 [data-theme="dark"] body {
-    @apply bg-gray-900 text-gray-100;
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Тёмная тема: переопределения часто используемых utility-классов
+   Это позволяет не переписывать каждый компонент. Под капотом мы мапим
+   «светлые» классы на их тёмные аналоги при наличии [data-theme="dark"] на <html>. */
+[data-theme="dark"] .bg-white {
+  @apply bg-slate-800;
+}
+
+[data-theme="dark"] .bg-slate-50 {
+  @apply bg-slate-900;
+}
+
+[data-theme="dark"] .bg-gray-50 {
+  @apply bg-slate-900;
+}
+
+[data-theme="dark"] .bg-gray-100 {
+  @apply bg-slate-800;
+}
+
+[data-theme="dark"] .bg-zinc-50 {
+  @apply bg-slate-900;
+}
+
+[data-theme="dark"] .text-gray-900 {
+  @apply text-gray-100;
+}
+
+[data-theme="dark"] .text-gray-800 {
+  @apply text-gray-100;
+}
+
+[data-theme="dark"] .text-gray-700 {
+  @apply text-gray-200;
+}
+
+[data-theme="dark"] .text-gray-600 {
+  @apply text-gray-300;
+}
+
+[data-theme="dark"] .text-gray-500 {
+  @apply text-gray-400;
+}
+
+[data-theme="dark"] .text-gray-400 {
+  @apply text-gray-400;
+}
+
+/* slate текстовые утилиты, встречающиеся в кнопках */
+[data-theme="dark"] .text-slate-700 {
+  @apply text-slate-200;
+}
+
+[data-theme="dark"] .text-slate-600 {
+  @apply text-slate-300;
+}
+
+[data-theme="dark"] .border-gray-200 {
+  @apply border-slate-700;
+}
+
+[data-theme="dark"] .border-slate-200 {
+  @apply border-slate-700;
+}
+
+[data-theme="dark"] .border-gray-300 {
+  @apply border-slate-700;
+}
+
+[data-theme="dark"] .border-gray-100 {
+  @apply border-slate-800;
+}
+
+/* Полупрозрачные белые подложки */
+[data-theme="dark"] .bg-white\/95 {
+  @apply bg-white/10;
+}
+
+[data-theme="dark"] .bg-white\/70 {
+  @apply bg-white/10;
+}
+
+[data-theme="dark"] .hover\:bg-white\/50:hover {
+  @apply hover:bg-white/20;
+}
+
+/* Hover для светлых сланцевых подложек в кнопках */
+[data-theme="dark"] .hover\:bg-slate-50:hover {
+  @apply hover:bg-slate-800;
+}
+
+[data-theme="dark"] .hover\:\!bg-slate-50:hover {
+  @apply hover:bg-slate-800;
+}
+
+/* Светлые цветные бейджи и тексты */
+[data-theme="dark"] .bg-blue-50 {
+  @apply bg-blue-900/30;
+}
+
+[data-theme="dark"] .text-blue-700 {
+  @apply text-blue-300;
+}
+
+[data-theme="dark"] .border-blue-200 {
+  @apply border-blue-800/50;
+}
+
+[data-theme="dark"] .bg-green-50 {
+  @apply bg-green-900/30;
+}
+
+[data-theme="dark"] .text-green-800 {
+  @apply text-green-300;
+}
+
+[data-theme="dark"] .border-green-200 {
+  @apply border-green-800/50;
+}
+
+[data-theme="dark"] .bg-orange-50 {
+  @apply bg-orange-900/30;
+}
+
+[data-theme="dark"] .text-orange-800 {
+  @apply text-orange-300;
+}
+
+[data-theme="dark"] .border-orange-200 {
+  @apply border-orange-800/50;
+}
+
+/* Доп. цвета: красный для бейджей/предупреждений */
+[data-theme="dark"] .bg-red-50 {
+  @apply bg-red-900/30;
+}
+
+[data-theme="dark"] .text-red-700 {
+  @apply text-red-300;
+}
+
+[data-theme="dark"] .border-red-200 {
+  @apply border-red-800/50;
+}
+
+/* Доп. цвета: purple для статусных баннеров */
+[data-theme="dark"] .bg-purple-50 {
+  @apply bg-purple-900/30;
+}
+
+[data-theme="dark"] .text-purple-800 {
+  @apply text-purple-300;
+}
+
+[data-theme="dark"] .border-purple-200 {
+  @apply border-purple-800/50;
+}
+
+/* Формы: инпуты/селекты/текстовые поля */
+input, select, textarea {
+  @apply bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  @apply bg-slate-800 text-gray-100 placeholder:text-gray-400 border-slate-700;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  @apply ring-2 ring-blue-500/60 outline-none;
 }
 
 /* Улучшенные стили скроллбара */
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-gray-200 rounded;
+  @apply bg-gray-200 rounded;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-track {
-    @apply bg-gray-700;
+  @apply bg-gray-700;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-400 rounded;
+  @apply bg-gray-400 rounded;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-    @apply bg-gray-500;
+  @apply bg-gray-500;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-500;
+  @apply bg-gray-500;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+  @apply bg-gray-400;
 }
 
 /* Предотвращение масштабирования на мобильных */
 @media (max-width: 768px) {
-    input, textarea, select {
-        font-size: 16px !important;
-    }
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 /* Утилитарные классы */
 .antialiased {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

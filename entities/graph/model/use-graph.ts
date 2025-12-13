@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 import {
   GraphData,
   Vertex,
@@ -13,18 +13,18 @@ import {
 
 const initialGraphData: GraphData = {
   vertices: [
-    { id: 1, x: 200, y: 200 },
-    { id: 2, x: 400, y: 200 },
-    { id: 3, x: 300, y: 300 },
-    { id: 4, x: 200, y: 300 },
-    { id: 5, x: 400, y: 300 }
+    {id: 1, x: 200, y: 200},
+    {id: 2, x: 400, y: 200},
+    {id: 3, x: 300, y: 300},
+    {id: 4, x: 200, y: 300},
+    {id: 5, x: 400, y: 300}
   ],
   edges: [
-    { from: 1, to: 2, weight: 2 },
-    { from: 1, to: 4, weight: 5 },
-    { from: 2, to: 3, weight: 3 },
-    { from: 3, to: 4, weight: 4 },
-    { from: 4, to: 5, weight: 5 }
+    {from: 1, to: 2, weight: 2},
+    {from: 1, to: 4, weight: 5},
+    {from: 2, to: 3, weight: 3},
+    {from: 3, to: 4, weight: 4},
+    {from: 4, to: 5, weight: 5}
   ],
   type: 'undirected'
 };
@@ -33,7 +33,7 @@ interface UseGraphProps {
   isMobile?: boolean;
 }
 
-export const useGraph = ({ isMobile = false }: UseGraphProps = {}) => {
+export const useGraph = ({isMobile = false}: UseGraphProps = {}) => {
   const [graphData, setGraphData] = useState<GraphData>(initialGraphData);
   const [selectedVertices, setSelectedVertices] = useState<number[]>([]);
   const [shortestPath, setShortestPath] = useState<ShortestPathResult | null>(null);
@@ -61,7 +61,7 @@ export const useGraph = ({ isMobile = false }: UseGraphProps = {}) => {
     setGraphData(prev => ({
       ...prev,
       vertices: prev.vertices.map(v =>
-        v.id === vertexId ? { ...v, x, y } : v
+        v.id === vertexId ? {...v, x, y} : v
       )
     }));
   }, []);
@@ -97,12 +97,12 @@ export const useGraph = ({ isMobile = false }: UseGraphProps = {}) => {
   }, [graphData.type, clearResults]);
 
   const exportGraph = useCallback(() => {
-    const { Graph } = require('./graph');
+    const {Graph} = require('./graph');
     const graph = new Graph();
     graph.initializeFromData(graphData.vertices, graphData.edges, graphData.type);
     const content = graph.exportToFile();
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -156,7 +156,7 @@ export const useGraph = ({ isMobile = false }: UseGraphProps = {}) => {
   }, [graphData, clearResults]);
 
   const handleAddEdge = useCallback((from: number, to: number, weight: number) => {
-    const newEdge: Edge = { from, to, weight };
+    const newEdge: Edge = {from, to, weight};
     const edgeExists = graphData.edges.some((e: Edge) =>
       (e.from === from && e.to === to) || (graphData.type === 'undirected' && e.from === to && e.to === from)
     );

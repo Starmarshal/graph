@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Vertex } from '@/shared/types/grpah.interface';
+import React, {useState} from 'react';
+import {Vertex} from '@/shared/types/grpah.interface';
 import Button from '@/shared/ui/Button';
 import Input from '@/shared/ui/Input';
 

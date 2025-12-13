@@ -11,13 +11,14 @@ const StatusBanner: React.FC<StatusBanner> = ({
                                                 ...props
                                               }) => {
   return (
-    <div className={`
+    <div
+      className={`
       mt-2 p-2 rounded-lg
       border text-sm 
       text-center h-[41px] flex items-center justify-center
       ${className}
       `.trim()}
-         {...props}
+      {...props}
     >
       {children}
     </div>

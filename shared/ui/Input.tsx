@@ -11,10 +11,10 @@ const Input: React.FC<InputProps> = ({
   return (
     <input
       className={`
-          border border-gray-300
+          border
           rounded-md text-sm transition-all duration-200
           ease-in-out h-[41px] text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-          placeholder-text-gray-400 px-[10px] py-[12px]
+          placeholder:text-gray-400 px-[10px] py-[12px]
         ${className}
       `.trim()}
       {...props}
